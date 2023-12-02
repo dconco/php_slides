@@ -27,10 +27,10 @@
     "scripts": {
         "create-slides-app": "composer create-project dconco/php_slides"
     },
-    "authors": {
-        "name": "Dave Conco",
-        "email": "concodave@gmail.com"
-    },
+    "authors": [ {
+            "name": "Dave Conco",
+            "email": "concodave@gmail.com"
+        } ],
     "require": {
         "firebase/php-jwt": "^6.9",
         "vlucas/phpdotenv": "^5.5"
