@@ -27,6 +27,7 @@
         } ],
     "require": {
         "php": ">=8.0",
+        "dconco/php_slides": "dev-main",
         "firebase/php-jwt": "^6.9",
         "vlucas/phpdotenv": "^5.5"
     },
