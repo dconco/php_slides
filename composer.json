@@ -40,6 +40,6 @@
             "allow-contrib": false
         }
     },
-    "minimum-stability": "dev-main",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }
