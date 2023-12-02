@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+include dirname(__DIR__) . '/vendor/autoload.php';
 
 use PhpSlides\view;
 use PhpSlides\Route;
@@ -12,18 +12,13 @@ use PhpSlides\Route;
 Route::config();
 
 
-/* REGISTER ROUTES */
+/**
+ * Register all routes here to render according to request
+ * `NOTE` that browser cannot access any page that are not coming from route, it redirects to 404
+ */
 
-// view route
 Route::view([ '/', '/index' ], 'views::index');
 
-// // get route
-Route::post('/profile/{user_id}', function (int $user_id)
-{
-    return json_encode([ 'user_id' => $user_id ]);
-});
-
-// // Handle not found errors
 Route::notFound(function ()
 {
     return view::render('views::errors::404');

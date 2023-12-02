@@ -10,7 +10,8 @@ class ComposerStaticInitb42587e9b45336e82a2edb8da245e106
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
-        'f034ca428f0ef14c23cbebabb510b6c8' => __DIR__ . '/../..' . '/Models/cors.php',
+        'a1e3bcf8eee55aff27ae3e1aefbaae96' => __DIR__ . '/../..' . '/configs/env.config.php',
+        '1d22b98fbfca03933a0c28c798e04927' => __DIR__ . '/../..' . '/configs/cors.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -131,8 +132,8 @@ class ComposerStaticInitb42587e9b45336e82a2edb8da245e106
         'PhpOption\\None' => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption/None.php',
         'PhpOption\\Option' => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption/Option.php',
         'PhpOption\\Some' => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption/Some.php',
-        'PhpSlides\\Route' => __DIR__ . '/../..' . '/src/PhpSlides.php',
-        'PhpSlides\\view' => __DIR__ . '/../..' . '/src/PhpSlides.php',
+        'PhpSlides\\Route' => __DIR__ . '/../..' . '/App/PhpSlides.php',
+        'PhpSlides\\view' => __DIR__ . '/../..' . '/App/PhpSlides.php',
         'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
         'Symfony\\Polyfill\\Ctype\\Ctype' => __DIR__ . '/..' . '/symfony/polyfill-ctype/Ctype.php',

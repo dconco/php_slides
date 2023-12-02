@@ -51,6 +51,7 @@ class Route
     protected static function config_file()
     {
         $dir = dirname(__DIR__);
+
         $file_path = $dir . '/phpslides.config.json';
 
         // checks if the config file exist in project root directory
@@ -114,7 +115,7 @@ class Route
                      * checks if array key from url exists in the config file
                      *
                      */
-                    if (array_key_exists($url[$index], $config) && $url[0] !== 'views')
+                    if (array_key_exists($url[$index], $config))
                     {
                         $url_val .= $value . '/';
                         $config_ext = [ ...$config[$value] ];
@@ -608,7 +609,7 @@ class Route
  * Router View
  * 
  * 
- * which control the public url and validate it
+ * which control the public url and validating
  * 
  * 
  */
@@ -647,7 +648,7 @@ class view
                 }
             }
 
-            $file_uri = dirname(__DIR__) . '/public' . $view_path . $file[count($file) - 1];
+            $file_uri = dirname(__DIR__) . $view_path . $file[count($file) - 1];
 
             if (is_file($file_uri . '.view.php'))
             {

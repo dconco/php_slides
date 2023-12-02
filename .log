@@ -1,54 +1,64 @@
-GET			 HTTP/1.1			 200			 /index			 Sat, 02-12-2023 17:19:57
+GET			 HTTP/1.1			 200			 /			 Sat, 02-12-2023 18:46:09
 
-GET			 HTTP/1.1			 404			 /index/ws			 Sat, 02-12-2023 17:19:58
+GET			 HTTP/1.1			 404			 /ws			 Sat, 02-12-2023 18:46:09
 
-GET			 HTTP/1.1			 404			 /profile/2/ws			 Sat, 02-12-2023 17:20:04
+GET			 HTTP/1.1			 404			 /login			 Sat, 02-12-2023 18:46:26
 
-GET			 HTTP/1.1			 200			 /			 Sat, 02-12-2023 17:20:08
+GET			 HTTP/1.1			 404			 /login/ws			 Sat, 02-12-2023 18:46:26
 
-GET			 HTTP/1.1			 404			 /ws			 Sat, 02-12-2023 17:20:08
+GET			 HTTP/1.1			 404			 /signup			 Sat, 02-12-2023 18:46:27
 
-GET			 HTTP/1.1			 200			 /			 Sat, 02-12-2023 17:20:13
+GET			 HTTP/1.1			 404			 /signup/ws			 Sat, 02-12-2023 18:46:28
 
-GET			 HTTP/1.1			 404			 /ws			 Sat, 02-12-2023 17:20:13
+GET			 HTTP/1.1			 200			 /			 Sat, 02-12-2023 18:47:03
 
-GET			 HTTP/1.1			 200			 /			 Sat, 02-12-2023 17:20:14
+GET			 HTTP/1.1			 404			 /ws			 Sat, 02-12-2023 18:47:03
 
-GET			 HTTP/1.1			 404			 /ws			 Sat, 02-12-2023 17:20:14
+GET			 HTTP/1.1			 200			 /			 Sat, 02-12-2023 21:53:34
 
-GET			 HTTP/1.1			 200			 /			 Sat, 02-12-2023 17:37:29
+GET			 HTTP/1.1			 404			 /ws			 Sat, 02-12-2023 21:53:34
 
-GET			 HTTP/1.1			 404			 /ws			 Sat, 02-12-2023 17:37:29
+GET			 HTTP/1.1			 200			 /			 Sat, 02-12-2023 21:55:25
 
-GET			 HTTP/1.1			 200			 /			 Sat, 02-12-2023 17:53:21
+GET			 HTTP/1.1			 404			 /ws			 Sat, 02-12-2023 21:55:25
 
-GET			 HTTP/1.1			 404			 /ws			 Sat, 02-12-2023 17:53:21
+GET			 HTTP/1.1			 200			 /assets/favicon.jpg			 Sat, 02-12-2023 21:55:30
 
-GET			 HTTP/1.1			 200			 /			 Sat, 02-12-2023 18:00:51
+GET			 HTTP/1.1			 404			 /assets/favicon.jpg/ws			 Sat, 02-12-2023 21:55:30
 
-GET			 HTTP/1.1			 404			 /ws			 Sat, 02-12-2023 18:00:52
+GET			 HTTP/1.1			 404			 /assets/favicon			 Sat, 02-12-2023 21:55:41
 
-GET			 HTTP/1.1			 200			 /			 Sat, 02-12-2023 18:01:20
+GET			 HTTP/1.1			 404			 /assets/favicon/ws			 Sat, 02-12-2023 21:55:41
 
-GET			 HTTP/1.1			 404			 /login			 Sat, 02-12-2023 18:01:20
+GET			 HTTP/1.1			 404			 /assets/			 Sat, 02-12-2023 21:55:43
 
-GET			 HTTP/1.1			 404			 /signup			 Sat, 02-12-2023 18:01:23
+GET			 HTTP/1.1			 404			 /assets/ws			 Sat, 02-12-2023 21:55:43
 
-GET			 HTTP/1.1			 404			 /signup/ws			 Sat, 02-12-2023 18:01:27
+GET			 HTTP/1.1			 404			 /assets/			 Sat, 02-12-2023 21:55:46
 
-GET			 HTTP/1.1			 200			 /index			 Sat, 02-12-2023 18:01:27
+GET			 HTTP/1.1			 404			 /assets/ws			 Sat, 02-12-2023 21:55:46
 
-GET			 HTTP/1.1			 404			 /index/ws			 Sat, 02-12-2023 18:01:31
+GET			 HTTP/1.1			 404			 /public			 Sat, 02-12-2023 21:55:50
 
-GET			 HTTP/1.1			 200			 /index			 Sat, 02-12-2023 18:01:45
+GET			 HTTP/1.1			 404			 /public/ws			 Sat, 02-12-2023 21:55:51
 
-GET			 HTTP/1.1			 200			 /index			 Sat, 02-12-2023 18:01:48
+GET			 HTTP/1.1			 404			 /public/			 Sat, 02-12-2023 21:55:55
 
-GET			 HTTP/1.1			 200			 /			 Sat, 02-12-2023 18:01:50
+GET			 HTTP/1.1			 404			 /public/ws			 Sat, 02-12-2023 21:55:55
 
-GET			 HTTP/1.1			 404			 /ws			 Sat, 02-12-2023 18:01:54
+GET			 HTTP/1.1			 404			 /public			 Sat, 02-12-2023 21:55:58
 
-GET			 HTTP/1.1			 200			 /			 Sat, 02-12-2023 18:01:58
+GET			 HTTP/1.1			 404			 /public/ws			 Sat, 02-12-2023 21:55:58
 
-GET			 HTTP/1.1			 404			 /ws			 Sat, 02-12-2023 18:02:02
+GET			 HTTP/1.1			 200			 /			 Sat, 02-12-2023 21:56:03
+
+GET			 HTTP/1.1			 404			 /ws			 Sat, 02-12-2023 21:56:03
+
+GET			 HTTP/1.1			 404			 /signup			 Sat, 02-12-2023 21:56:06
+
+GET			 HTTP/1.1			 404			 /signup/ws			 Sat, 02-12-2023 21:56:06
+
+GET			 HTTP/1.1			 404			 /signup			 Sat, 02-12-2023 21:56:09
+
+GET			 HTTP/1.1			 404			 /signup/ws			 Sat, 02-12-2023 21:56:09
 

@@ -5,22 +5,20 @@
     "type": "project",
     "keywords": [
         "php",
+        "api",
         "router",
-        "php router",
         "php slides",
-        "php slide",
         "slides",
-        "slide",
-        "php api",
-        "library",
         "project",
         "server",
-        "client",
-        "php framework"
+        "framework"
     ],
     "license": "MIT",
     "autoload": {
-        "files": [ "./Models/cors.php" ],
+        "files": [
+            "./configs/env.config.php",
+            "./configs/cors.php"
+        ],
         "classmap": [ "*" ]
     },
     "scripts": {
@@ -42,6 +40,6 @@
             "allow-contrib": false
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }
