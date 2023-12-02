@@ -8,10 +8,15 @@
         "router",
         "php router",
         "php slides",
+        "php slide",
         "slides",
+        "slide",
         "php api",
         "library",
-        "project"
+        "project",
+        "server",
+        "client",
+        "php framework"
     ],
     "license": "MIT",
     "autoload": {
@@ -20,7 +25,7 @@
         }
     },
     "scripts": {
-        "create-slides-app": "dconco\\php_slides\\CreateProjectCommand::execute"
+        "create-slides-app": "php create-slides-app.php"
     },
     "authors": [ {
             "name": "dconco",
