@@ -1,7 +1,6 @@
 <?php
 
-$base_dir = dirname(__DIR__);
-require_once $base_dir . '/vendor/autoload.php';
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 use PhpSlides\view;
 use PhpSlides\Route;
@@ -13,31 +12,18 @@ use PhpSlides\Route;
 Route::config();
 
 
-// Register API's
-// Route::any("/api/v1/account/login", $api_dir);
-// Route::any("/api/v1/account/register", $api_dir);
-// Route::any("/api/v1/account/logout", $api_dir);
-// Route::any("/api/v1/profile/{user_id}", $api_dir);
-// Route::any("/api/v1/dashboard", $api_dir);
-
-// // Register views page
-// Route::any('/login', 'views/login.php');
-// Route::any('/signup', 'views/signup.php');
-// Route::any('/profile/{user_id}', 'views/profile.php');
-
-
 /* REGISTER ROUTES */
 
 // view route
 Route::view([ '/', '/index' ], 'views::index');
 
-// get route
+// // get route
 Route::post('/profile/{user_id}', function (int $user_id)
 {
     return json_encode([ 'user_id' => $user_id ]);
 });
 
-// Handle not found errors
+// // Handle not found errors
 Route::notFound(function ()
 {
     return view::render('views::errors::404');
