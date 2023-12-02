@@ -24,6 +24,11 @@
             "PhpSlides\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpSlides\\Tests\\": "tests/"
+        }
+    },
     "scripts": {
         "create-slides-app": "composer create-project dconco/php_slides:dev-main"
     },
@@ -32,9 +37,17 @@
             "email": "concodave@gmail.com"
         } ],
     "require": {
-
+        "symfony/console": "^5.0",
         "firebase/php-jwt": "^6.9",
         "vlucas/phpdotenv": "^5.5"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": false
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true

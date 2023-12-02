@@ -1,0 +1,28 @@
+#!/usr/bin/env php
+<?php
+
+if (file_exists(__DIR__ . '/../vendor/autoload.php'))
+{
+    chdir(__DIR__ . '/..');
+}
+elseif (file_exists(__DIR__ . '/../../../vendor/autoload.php'))
+{
+    chdir(__DIR__ . '/../../..');
+}
+else
+{
+    fwrite(
+        STDERR,
+        "Unable to determine project root. Please make sure you have installed dependencies using Composer.\n"
+    );
+    exit(1);
+}
+
+require 'vendor/autoload.php';
+
+use PhpSlides\Command\CreateSlidesCommand;
+use Symfony\Component\Console\Application;
+
+$application = new Application();
+$application->add(new CreateSlidesCommand());
+$application->run();

@@ -1,11 +1,10 @@
 <?php
 
-
-use PhpSlides\Router\view;
-use PhpSlides\Router\Route;
-
 $base_dir = dirname(__DIR__);
-require_once $base_dir . '/autoload.php';
+require_once $base_dir . '/vendor/autoload.php';
+
+use PhpSlides\view;
+use PhpSlides\Route;
 
 /**
  * This function must be presented at the beginning before any other codes for security reasons and in handling files request
@@ -13,9 +12,6 @@ require_once $base_dir . '/autoload.php';
  */
 Route::config();
 
-
-
-$api_dir = $base_dir . '/Controller/UserController.php';
 
 // Register API's
 // Route::any("/api/v1/account/login", $api_dir);
