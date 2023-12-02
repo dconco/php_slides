@@ -25,7 +25,7 @@
         }
     },
     "scripts": {
-        "create-slides-app": "composer create-project dconco/php_slides"
+        "create-slides-app": "composer create-project dconco/php_slides:dev-main"
     },
     "authors": [ {
             "name": "Dave Conco",
