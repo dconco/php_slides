@@ -1,7 +1,8 @@
 {
     "name": "dconco/php_slides",
     "description": "PhpSlides is a php library that allows you to use it's inbuilt Route() function to create a secured Routing in php and secured API, which contains SQL injections, and prevent from XSS attack.",
-    "type": "project",
+    "version": "0.1.0",
+    "type": "library",
     "keywords": [
         "php",
         "router",
@@ -19,7 +20,7 @@
         }
     },
     "scripts": {
-        "create-slides-app": "bin/create-slides-app.php"
+        "create-slides-app": "dconco\\php_slides\\CreateProjectCommand::execute"
     },
     "authors": [ {
             "name": "dconco",
@@ -27,7 +28,6 @@
         } ],
     "require": {
         "php": ">=8.0",
-        "dconco/php_slides": "dev-main@dev",
         "firebase/php-jwt": "^6.9",
         "vlucas/phpdotenv": "^5.5"
     },
