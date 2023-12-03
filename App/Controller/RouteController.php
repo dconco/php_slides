@@ -2,6 +2,7 @@
 
 namespace PhpSlides\Controller;
 
+use DateTime;
 use Exception;
 use PhpSlides\Route;
 
@@ -9,11 +10,11 @@ class RouteController
 {
 
     /**
-     * 
-     * `config_file` allows you to write configurations in `phpslides.config.json` file.
-     * 
-     * @return array|bool an `array` data retrieve from json data gotten from the config files
-     * 
+     *  ============================================================
+     *  |   `config_file` allows you to write configurations in `phpslides.config.json` file.
+     *  |
+     *  |   @return array|bool an `array` data retrieve from json data gotten from the config files
+     *  ============================================================
      */
     protected static function config_file(): array|bool
     {
@@ -40,10 +41,10 @@ class RouteController
 
 
     /**
-     * 
-     * 
-     * 
-     * 
+     *  ==============================
+     *  |   --------------------
+     *  |   --------------------
+     *  ==============================
      */
     protected static function routing(array|string $route, $callback)
     {
@@ -73,8 +74,45 @@ class RouteController
 
             return $callback;
         }
+    }
 
-        Route::$log = '';
+
+
+    /**
+     *  ========================
+     *  | log all request to `.log` file
+     *  ========================
+     */
+    protected static function log()
+    {
+        $log_path = dirname(__DIR__) . '/.log';
+
+        // set current date format
+        $date = new DateTime('now');
+        $date = date_format($date, 'D, d-m-Y H:i:s');
+
+        // get request method type
+        $method = $_SERVER["REQUEST_METHOD"];
+
+        // get request url
+        $uri = '/' . $_REQUEST["uri"];
+
+        // get status response code for each request
+        $http_code = http_response_code();
+
+        //  protocol code for request header
+        $http_protocol = $_SERVER["SERVER_PROTOCOL"];
+
+        // all content messages to return 
+        $content = "$method\t\t\t $http_protocol\t\t\t $http_code\t\t\t $uri\t\t\t $date\n\n";
+
+
+        if (Route::$log == true)
+        {
+            $log = fopen($log_path, 'a');
+            fwrite($log, $content);
+            fclose($log);
+        }
     }
 
 }
