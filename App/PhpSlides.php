@@ -4,6 +4,7 @@ namespace PhpSlides;
 
 use DateTime;
 use Exception;
+use PhpSlides\Controller\RouteController;
 
 /**
  * 
@@ -24,7 +25,7 @@ use Exception;
  * 
  */
 
-class Route
+final class Route extends RouteController
 {
 
     /**
@@ -42,32 +43,6 @@ class Route
      */
     public static $log = true;
 
-
-    /**
-     * 
-     * `config_file` allows you to write configurations in `phpslides.config.json` file.
-     * 
-     */
-    protected static function config_file()
-    {
-        $dir = dirname(__DIR__);
-
-        $file_path = $dir . '/phpslides.config.json';
-
-        // checks if the config file exist in project root directory
-        if (file_exists($file_path))
-        {
-            // get json files and convert it to an array
-            $config_file = file_get_contents($file_path);
-            $config_file = json_decode($config_file, true);
-
-            return $config_file;
-        }
-        else
-        {
-            throw new Exception('URL request failed. Configuration file for PhpSlides is not found in the root of your project');
-        }
-    }
 
 
     /**
@@ -191,82 +166,6 @@ class Route
     }
 
 
-    /**
-     * log all request to `.log` file
-     */
-    private static function log()
-    {
-        $log_path = dirname(__DIR__) . '/.log';
-
-        // set current date format
-        $date = new DateTime('now');
-        $date = date_format($date, 'D, d-m-Y H:i:s');
-
-        // get request method type
-        $method = $_SERVER["REQUEST_METHOD"];
-
-        // get request url
-        $uri = '/' . $_REQUEST["uri"];
-
-        // get status response code for each request
-        $http_code = http_response_code();
-
-        //  protocol code for request header
-        $http_protocol = $_SERVER["SERVER_PROTOCOL"];
-
-        // all content messages to return 
-        $content = "$method\t\t\t $http_protocol\t\t\t $http_code\t\t\t $uri\t\t\t $date\n\n";
-
-
-        if (self::$log == true)
-        {
-            $log = fopen($log_path, 'a');
-            fwrite($log, $content);
-            fclose($log);
-        }
-    }
-
-
-
-    /**
-     * 
-     * 
-     * 
-     * 
-     */
-    private static function simpleRoute(array|string $route, $callback)
-    {
-        //replacing first and last forward slashes
-        //$_REQUEST['uri'] will be empty if req uri is /
-
-        $uri = [];
-        $str_route = '';
-        $reqUri = preg_replace("/(^\/)|(\/$)/", "", $_REQUEST["uri"]);
-
-        if (is_array($route))
-        {
-            for ($i = 0; $i < count($route); $i++)
-            {
-                $each_route = preg_replace("/(^\/)|(\/)/", "", $route[$i]);
-                array_push($uri, $each_route);
-            }
-        }
-        else
-        {
-            $str_route = preg_replace("/(^\/)|(\/)/", "", $route);
-        }
-
-        if (in_array($reqUri, $uri) || $reqUri === $str_route)
-        {
-            $charset = self::config_file()['charset'];
-            header("Content-type: */*, charset=$charset");
-            http_response_code(200);
-            print_r($callback());
-            self::log();
-            exit;
-        }
-    }
-
 
 
     /**
@@ -295,14 +194,20 @@ class Route
         $paramKey = [];
 
         //finding if there is any {?} parameter in $route
-        preg_match_all("/(?<={).+?(?=})/", $route, $paramMatches);
+        if (is_string($route))
+        {
+            preg_match_all("/(?<={).+?(?=})/", $route, $paramMatches);
+        }
 
-        //if the route does not contain any param call simpleRoute();
+        //if the route does not contain any param call routing();
 
         if (empty($paramMatches[0]) || is_array($route))
         {
-            self::simpleRoute($route, $callback);
-            return;
+            $callback = self::routing($route, $callback);
+            self::log();
+            print_r(is_callable($callback) ? $callback() : $callback);
+
+            exit;
         }
 
 
@@ -411,6 +316,7 @@ class Route
             $charset = self::config_file()['charset'];
             header("Content-type: */*, charset=$charset");
             http_response_code(200);
+
             print_r($callback(...$req_value));
             self::log();
             exit;
@@ -431,13 +337,6 @@ class Route
      */
     public static function view(array|string $route, string $view)
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'GET')
-        {
-            http_response_code(405);
-            self::log();
-            exit('Method Not Allowed');
-        }
-
 
         /**
          * 
@@ -465,6 +364,15 @@ class Route
 
         if (in_array($reqUri, $uri) || $reqUri === $str_route)
         {
+
+            if ($_SERVER['REQUEST_METHOD'] !== 'GET')
+            {
+                http_response_code(405);
+                self::log();
+                exit('Method Not Allowed');
+            }
+
+
             $view = view::render($view);
 
             if ($view)
@@ -595,7 +503,8 @@ class Route
         $charset = self::config_file()['charset'];
         header("Content-type: */*, charset=$charset");
         http_response_code(404);
-        print_r($callback());
+
+        print_r(is_callable($callback) ? $callback() : $callback);
         self::log();
     }
 }
@@ -613,7 +522,7 @@ class Route
  * 
  * 
  */
-class view
+final class view
 {
 
 
