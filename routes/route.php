@@ -12,7 +12,7 @@ include dirname(__DIR__) . '/vendor/autoload.php';
  *  |   The parameter contains only be a boolean, which indicates request logger to prints out logs output on each received request 
  *  ---------------------------------------------------------------------------------------------------------------------------
  */
-Route::config(true);
+Route::config();
 
 
 /**
