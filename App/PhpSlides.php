@@ -43,7 +43,7 @@ final class Route extends Controller
      * 
      *  ---------------------------------------------------------------------------------------------------------
      */
-    public static $log = true;
+    public static bool $log;
 
 
 
@@ -65,15 +65,11 @@ final class Route extends Controller
      *  
      *  ---------------------------------------------------------------------------------------------------------
      */
-    public static function config(bool|null $request_log = null)
+    public static function config(bool $request_log = true)
     {
         try
         {
-            if (is_bool($request_log))
-            {
-                self::$log = $request_log;
-            }
-
+            self::$log = $request_log;
 
             $dir = dirname(__DIR__);
             $req = preg_replace("/(^\/)|(\/$)/", "", $_REQUEST["uri"]);

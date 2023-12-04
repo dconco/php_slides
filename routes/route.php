@@ -12,7 +12,7 @@ include dirname(__DIR__) . '/vendor/autoload.php';
  *  |   The parameter contains only be a boolean, which indicates request logger to prints out logs output on each received request 
  *  ---------------------------------------------------------------------------------------------------------------------------
  */
-Route::config();
+Route::config(true);
 
 
 /**
@@ -23,7 +23,7 @@ Route::config();
  *  --------------------------------------------------------------------
  */
 
-Route::view([ '/', '/index' ], '::index');
+Route::view([ '/', '/index' ], '::dashboard');
 
 Route::get('/post', [ PostsController::class]);
 Route::get('/post/{id}', [ PostsController::class, 'Post' ]);

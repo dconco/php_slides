@@ -2,7 +2,6 @@
 
 /**
  * Configure your setting for cross-origin resource sharing
- * How 
  */
 
 // Allow cross-origin requests from any origin
