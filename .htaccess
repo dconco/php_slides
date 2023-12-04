@@ -1,8 +1,8 @@
-# Don't change this settings if you want more security on your website
+# Don't change this settings, instead edit the phpslides.config.json
 
 RewriteEngine On
 
-# Accept Authorization Header, like Bearer $token
+# Accept Authorization Header
 RewriteCond %{HTTP:Authorization} ^(.+)$
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 

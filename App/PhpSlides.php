@@ -3,7 +3,8 @@
 namespace PhpSlides;
 
 use Exception;
-use PhpSlides\Controller\RouteController;
+use PhpSlides\Controller\Controller;
+
 
 /**
  *  -------------------------------------------------------------------------------
@@ -25,7 +26,7 @@ use PhpSlides\Controller\RouteController;
  *  ---------------------------------------------------------------------------------
  */
 
-final class Route extends RouteController
+final class Route extends Controller
 {
 
     /**
@@ -58,20 +59,33 @@ final class Route extends RouteController
      *
      *
      *  |   This config method must be called before writing any other Route method or codes.
+     *  |
+     *  
+     *  @param bool $request_log The parameter indicates request logger to prints out logs output on each received request 
      *  
      *  ---------------------------------------------------------------------------------------------------------
      */
-    public static function config(bool $request_log = true)
+    public static function config(bool|null $request_log = null)
     {
         try
         {
+            if (is_bool($request_log))
+            {
+                self::$log = $request_log;
+            }
+
+
             $dir = dirname(__DIR__);
             $req = preg_replace("/(^\/)|(\/$)/", "", $_REQUEST["uri"]);
             $url = explode('/', $req);
 
             $config_file = self::config_file();
 
-
+            /**
+             *  ----------------------------------------------
+             *  |   Config File & Request Router configurations
+             *  ----------------------------------------------
+             */
             if (!empty($config_file))
             {
                 $config = $config_file['public'];
@@ -103,16 +117,17 @@ final class Route extends RouteController
 
                         /**
                          *  ----------------------------------------------------------------------------------
-                         *  |   Checks if requested extension is decaleared in the config file or * which signifies all types of extension
+                         *  |   Checks if requested extension is decleared in the config file or * which signifies all types of extension
                          *  ----------------------------------------------------------------------------------
                          */
                         if (in_array($req_ext, $config_ext) || in_array('*', $config_ext))
                         {
-                            if (file_exists($dir . '/public/' . $url_val) && filetype($dir . '/public/' . $url_val) === 'file')
+                            if (is_file($dir . '/public/' . $url_val))
                             {
                                 http_response_code(200);
                                 $charset = $config_file["charset"];
                                 header("Content-type: */*, charset=$charset");
+
                                 print_r(file_get_contents($dir . '/public/' . $url_val));
                                 self::log();
                                 exit;
@@ -130,8 +145,7 @@ final class Route extends RouteController
                 if (
                 array_key_exists('/', $config)
                 && count($url) === 1
-                && file_exists($dir . '/public/' . $url[0])
-                && filetype($dir . '/public/' . $url[0]) === 'file'
+                && is_file($dir . '/public/' . $url[0])
                 )
                 {
                     $req_ext = explode('.', $url[0]);
@@ -151,6 +165,7 @@ final class Route extends RouteController
                             http_response_code(200);
                             $charset = $config_file["charset"];
                             header("Content-type: */*, charset=$charset");
+
                             print_r(file_get_contents($dir . '/public/' . $url[0]));
                             self::log();
                             exit;
@@ -170,7 +185,6 @@ final class Route extends RouteController
 
 
 
-
     /**
      *  ------------------------------------------------------------------------
      *  
@@ -181,10 +195,13 @@ final class Route extends RouteController
      * 
      * 
      *  |   Cannot evaluate `{ url parameters }` in route if it's an array 
+     *  |
+     * 
+     *  @param array|string $route This describes the url string to render, use array of strings for multiple request
      *  
      *  ------------------------------------------------------------------------
      */
-    public static function any(array|string $route, $callback, $method = '*')
+    public static function any(array|string $route, $callback, string $method = '*')
     {
         // will store all the parameters value in this array
 
@@ -204,11 +221,34 @@ final class Route extends RouteController
 
         if (empty($paramMatches[0]) || is_array($route))
         {
-            $callback = self::routing($route, $callback);
-            self::log();
-            print_r(is_callable($callback) ? $callback() : $callback);
+            /**
+             *  ------------------------------------------------------
+             *  |   Check if $callback is a callable function 
+             *  |   or array of controller, and if not, 
+             *  |   it's a string of text or html document
+             *  ------------------------------------------------------
+             */
 
-            exit;
+            $callback = self::routing($route, $callback, $method);
+
+            if ($callback)
+            {
+                if (is_callable($callback))
+                {
+                    print_r($callback());
+                }
+                elseif (is_array($callback) && (preg_match("/(Controller)/", $callback[0], $matches) && count($matches) > 1))
+                {
+                    print_r(self::controller($callback[0], count($callback) > 1 ? $callback[1] : ''));
+                }
+                else
+                {
+                    print_r($callback);
+                }
+
+                self::log();
+                exit;
+            }
         }
 
 
@@ -250,22 +290,18 @@ final class Route extends RouteController
             }
         }
 
-
         /** 
          *  ----------------------------------------------------------------------------------
          *  |   Exploding request uri string to array to get the exact index number value of parameter from $_REQUEST['uri']
          *  ----------------------------------------------------------------------------------
          */
-
         $reqUri = explode("/", $reqUri);
-
 
         /**
          *  ----------------------------------------------------------------------------------
          *  |   Running for each loop to set the exact index number with reg expression this will help in matching route
          *  ----------------------------------------------------------------------------------
          */
-
         foreach ($indexNum as $key => $index)
         {
             /** 
@@ -281,6 +317,7 @@ final class Route extends RouteController
 
             // setting params with params names
             $req[$paramKey[$key]] = $reqUri[$index];
+
             $req_value[] = $reqUri[$index];
 
             // this is to create a regex for comparing route address
@@ -296,14 +333,13 @@ final class Route extends RouteController
          *  |   regex to match route is ready!
          *  -----------------------------------
          */
-
         $reqUri = str_replace("/", "\\/", $reqUri);
 
         // now matching route with regex
         if (preg_match("/$reqUri/", $route))
         {
             // checks if the requested method is of the given route
-            if ($_SERVER['REQUEST_METHOD'] !== $method || $method !== '*')
+            if (strtoupper($_SERVER['REQUEST_METHOD']) !== strtoupper($method) && $method !== '*')
             {
                 http_response_code(405);
                 self::log();
@@ -314,7 +350,15 @@ final class Route extends RouteController
             header("Content-type: */*, charset=$charset");
             http_response_code(200);
 
-            print_r($callback(...$req_value));
+            if (is_array($callback) && (preg_match("/(Controller)/", $callback[0], $matches) && count($matches) > 1))
+            {
+                print_r(self::controller($callback[0], count($callback) > 1 ? $callback[1] : '', $req_value));
+            }
+            else
+            {
+                print_r(is_callable($callback) ? $callback(...$req_value) : $callback);
+            }
+
             self::log();
             exit;
         }
@@ -328,10 +372,16 @@ final class Route extends RouteController
      *  |   VIEW ROUTE METHOD 
      * 
      *  |   Route only needs to return a view; you may provide an array for multiple request
-     *     
+     * 
+     *  |   View Route does not accept `{ url parameters }` in route, use GET method instead
+     *  
+     *      @param array|string $route This describes the url string to render, use array of strings for multiple request
+     *      @param string $view It renders this param, it can be functions to render, view:: to render or strings of text or documents
+     *  |
+     * 
      *  ---------------------------------------------------------------------------
      */
-    public static function view(array|string $route, string $view)
+    final public static function view(array|string $route, string $view)
     {
 
         /**
@@ -361,7 +411,7 @@ final class Route extends RouteController
         if (in_array($reqUri, $uri) || $reqUri === $str_route)
         {
 
-            if ($_SERVER['REQUEST_METHOD'] !== 'GET')
+            if (strtoupper($_SERVER['REQUEST_METHOD']) !== 'GET')
             {
                 http_response_code(405);
                 self::log();
@@ -370,16 +420,16 @@ final class Route extends RouteController
 
 
             // render view page to browser
-            $view = view::render($view);
+            $view = (view::render($view) !== false) ? view::render($view) : $view;
 
             if ($view)
             {
                 $charset = self::config_file()['charset'];
                 header("Content-type: */*, charset=$charset");
                 http_response_code(200);
+
                 print_r($view);
                 self::log();
-
                 exit;
             }
         }
@@ -397,7 +447,7 @@ final class Route extends RouteController
      * 
      * ---------------------------------------------------------------
      */
-    public static function redirect(string $route, string $new_url, int $code = 301)
+    final public static function redirect(string $route, string $new_url, int $code = 301)
     {
         if (!empty($_REQUEST["uri"]))
         {
@@ -418,7 +468,6 @@ final class Route extends RouteController
 
 
 
-
     /**
      *  --------------------------------------------------------------
      * 
@@ -428,7 +477,7 @@ final class Route extends RouteController
      * 
      *  --------------------------------------------------------------
      */
-    public static function get(array|string $route, $callback)
+    final public static function get(array|string $route, $callback)
     {
         self::any($route, $callback, 'GET');
     }
@@ -444,7 +493,7 @@ final class Route extends RouteController
      * 
      *   --------------------------------------------------------------
      */
-    public static function post(array|string $route, $callback)
+    final public static function post(array|string $route, $callback)
     {
         self::any($route, $callback, 'POST');
     }
@@ -460,10 +509,11 @@ final class Route extends RouteController
      * 
      *  --------------------------------------------------------------
      */
-    public static function update(array|string $route, $callback)
+    final public static function update(array|string $route, $callback)
     {
         self::any($route, $callback, 'UPDATE');
     }
+
 
 
     /**
@@ -475,7 +525,7 @@ final class Route extends RouteController
      * 
      *  --------------------------------------------------------------
      */
-    public static function delete(array|string $route, $callback)
+    final public static function delete(array|string $route, $callback)
     {
         self::any($route, $callback, 'DELETE');
     }
@@ -492,7 +542,7 @@ final class Route extends RouteController
      * 
      * --------------------------------------------------------------
      */
-    public static function notFound($callback)
+    final public static function notFound($callback)
     {
         $charset = self::config_file()['charset'];
         header("Content-type: */*, charset=$charset");
@@ -502,7 +552,6 @@ final class Route extends RouteController
         self::log();
     }
 }
-
 
 
 
@@ -518,7 +567,6 @@ final class Route extends RouteController
 final class view
 {
 
-
     /**
      *  --------------------------------------------------------------
      * 
@@ -529,33 +577,21 @@ final class view
      * 
      *  --------------------------------------------------------------
      */
-    public static function render(string $view): string
+    final public static function render(string $view): string|bool
     {
         try
         {
             // split :: into array and extract the folder and files
-            $file = preg_split('/(::)|::/', $view);
-            $view_path = '';
+            $file = preg_replace('/(::)|::/', '/', $view);
+            $view_path = '/views/' . $file;
 
-            foreach ($file as $index => $item)
-            {
-                if ($index !== count($file) - 1)
-                {
-                    $view_path .= '/' . $item;
-                }
-                else
-                {
-                    $view_path .= '/';
-                }
-            }
-
-            $file_uri = dirname(__DIR__) . $view_path . $file[count($file) - 1];
+            $file_uri = dirname(__DIR__) . $view_path;
 
             if (is_file($file_uri . '.view.php'))
             {
                 return file_get_contents($file_uri . '.view.php');
             }
-            else if (is_file($file_uri))
+            else if (is_file($file_uri) && !is_dir($file_uri))
             {
                 return file_get_contents($file_uri);
             }

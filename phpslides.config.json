@@ -2,30 +2,42 @@
     "public": {
         "/": [ "*" ],
         "assets": [
-            "png",
-            "jpg",
-            "jpeg",
-            "svg",
-            "webp",
-            "gif",
             "js",
+            "gif",
+            "jpg",
+            "svg",
+            "png",
+            "jpeg",
+            "webp",
             "ts",
             "css",
-            "html",
+            "scss",
+            "sass",
             "htm",
+            "html",
+            "mp4",
+            "mp3",
+            "ogg",
             "txt",
             "readme"
         ],
         "images": [ "*" ],
         "styles": [
             "css",
-            "scss"
+            "scss",
+            "sass"
         ],
-        "src": [
+        "css": [
             "css",
             "scss",
+            "sass"
+        ],
+        "src": [
             "js",
-            "ts"
+            "ts",
+            "css",
+            "scss",
+            "sass"
         ],
         "axios": [
             "js",

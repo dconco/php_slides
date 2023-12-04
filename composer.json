@@ -1,13 +1,15 @@
 {
     "name": "dconco/php_slides",
     "description": "PhpSlides let you create a secured Routing in php and secured API, which contains SQL injections, and prevent from XSS attack.",
-    "version": "0.1.0",
+    "homepage": "https://github.com/dconco/php_slides",
+    "version": "1.0.0",
     "type": "project",
     "keywords": [
         "php",
         "api",
         "router",
         "php slides",
+        "php_slides",
         "slides",
         "project",
         "server",
@@ -22,7 +24,8 @@
         "classmap": [ "*" ]
     },
     "scripts": {
-        "create-slides-app": "composer create-project dconco/php_slides:dev-main"
+        "slides-refresh-autoload": "composer dump-autoload",
+        "create-slides-app": "composer create-project dconco/php_slides:dev-master"
     },
     "authors": [ {
             "name": "Dave Conco",
