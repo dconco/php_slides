@@ -120,7 +120,6 @@ class RouteController
         // all content messages to log 
         $content = "$method\t\t\t $http_protocol\t\t\t $http_code\t\t\t $uri\t\t\t $date\n\n";
 
-        echo Route::$log;
         if (Route::$log === true)
         {
             $log = fopen($log_path, 'a');

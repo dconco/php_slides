@@ -1,14 +1,14 @@
 {
     "public": {
-        "/": [ "*" ],
+        "/": ["*"],
         "assets": [
-            "js",
             "gif",
             "jpg",
             "svg",
             "png",
             "jpeg",
             "webp",
+            "js",
             "ts",
             "css",
             "scss",
@@ -21,7 +21,14 @@
             "txt",
             "readme"
         ],
-        "images": [ "*" ],
+        "images": [
+            "gif",
+            "jpg",
+            "svg",
+            "png",
+            "jpeg",
+            "webp"
+        ],
         "styles": [
             "css",
             "scss",
@@ -38,10 +45,6 @@
             "css",
             "scss",
             "sass"
-        ],
-        "axios": [
-            "js",
-            "ts"
         ]
     },
     "charset": "UTF-8"
