@@ -1,0 +1,48 @@
+{
+    "public": {
+        "/": [ "*" ],
+        "assets": [
+            "js",
+            "gif",
+            "jpg",
+            "svg",
+            "png",
+            "jpeg",
+            "webp",
+            "ts",
+            "css",
+            "scss",
+            "sass",
+            "htm",
+            "html",
+            "mp4",
+            "mp3",
+            "ogg",
+            "txt",
+            "readme"
+        ],
+        "images": [ "*" ],
+        "styles": [
+            "css",
+            "scss",
+            "sass"
+        ],
+        "css": [
+            "css",
+            "scss",
+            "sass"
+        ],
+        "src": [
+            "js",
+            "ts",
+            "css",
+            "scss",
+            "sass"
+        ],
+        "axios": [
+            "js",
+            "ts"
+        ]
+    },
+    "charset": "UTF-8"
+}
