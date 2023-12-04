@@ -1,0 +1,12 @@
+# Don't change this settings, instead edit the phpslides.config.json
+
+RewriteEngine On
+
+# Accept Authorization Header
+RewriteCond %{HTTP:Authorization} ^(.+)$
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Redirect all folders and files in the root project to routes.php
+RewriteCond %{REQUEST_FILENAME} !-d|-d
+RewriteCond %{REQUEST_FILENAME} !-f|-f
+RewriteRule ^(.*) routes/route.php?uri=$1 [QSA,L]
