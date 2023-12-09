@@ -2,6 +2,7 @@
 
 use PhpSlides\view;
 use PhpSlides\Route;
+use PhpSlides\Controller\PostsController;
 
 include dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -22,7 +23,9 @@ Route::config();
  *  --------------------------------------------------------------------
  */
 
-Route::view('/dashboard', '::dashboard');
-Route::redirect('/', '/dashboard');
+Route::view([ '/', '/index' ], '::dashboard');
 
-Route::any('*', view::render('::errors::404'));
+Route::get('/post', [ PostsController::class]);
+Route::get('/post/{id}', [ PostsController::class, 'Post' ]);
+
+Route::notFound(view::render('::errors::404'));

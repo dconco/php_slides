@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PhpSlides;
 
 use Exception;
 use PhpSlides\Controller\Controller;
-
 
 /**
  *  -------------------------------------------------------------------------------
@@ -46,6 +47,33 @@ final class Route extends Controller
     public static bool $log;
 
 
+    /**
+     *  ------------------------------------------------------
+     *  |
+     *  |   Get the file extension content-type with mime
+     * 
+     *  @param string $filename File path or file resources
+     *  @return bool|string Returns the MIME content type for a file as determined by using information from the magic.mime file.
+     *  |
+     *  ------------------------------------------------------
+     */
+    public static function file_type(string $filename): bool|string
+    {
+        if (is_file($filename))
+        {
+            $file_info = finfo_open(FILEINFO_MIME_TYPE);
+            $file_type = mime_content_type($filename);
+            finfo_close($file_info);
+
+            return $file_type;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
 
     /**
      *  ---------------------------------------------------------------------------------------------------------
@@ -75,67 +103,119 @@ final class Route extends Controller
             $req = preg_replace("/(^\/)|(\/$)/", "", $_REQUEST["uri"]);
             $url = explode('/', $req);
 
+            $file = self::get_included_file($dir . '/public/' . $req);
+            $file_type = $file ? self::file_type($dir . '/public/' . $req) : null;
+
             $config_file = self::config_file();
+
+            $charset = $config_file['charset'];
+            header("charset=$charset");
 
             /**
              *  ----------------------------------------------
              *  |   Config File & Request Router configurations
              *  ----------------------------------------------
              */
-            if (!empty($config_file))
+            if (!empty($config_file) && $file_type != null)
             {
                 $config = $config_file['public'];
 
-                // checks if the all url / match the key in json
-                $url_val = "";
-                $config_ext = [];
+                // checks if the all URL / match the key in json
+                $req_ext = explode('.', end($url));
+                $req_ext = strtolower(end($req_ext));
+                $accept = true;
 
-
-                // loop over the requested url folders
+                // loop over the requested URL folders
                 foreach ($url as $index => $value)
                 {
-
                     /**
                      *  -----------------------------------------------
-                     *  |   Checks if array key from url exists in the config file
+                     *  |   Checks if array key from URL exists in the config file
                      *  -----------------------------------------------
                      */
-                    if (array_key_exists($url[$index], $config))
+                    if (array_key_exists($value, $config))
                     {
-                        $url_val .= $value . '/';
-                        $config_ext = [ ...$config[$value] ];
-                    }
-                    elseif ($index === count($url) - 1)
-                    {
-                        $url_val .= $url[$index];
-                        $req_ext = explode('.', $url[$index]);
-                        $req_ext = end($req_ext);
-
-                        /**
-                         *  ----------------------------------------------------------------------------------
-                         *  |   Checks if requested extension is decleared in the config file or * which signifies all types of extension
-                         *  ----------------------------------------------------------------------------------
-                         */
-                        if (in_array($req_ext, $config_ext) || in_array('*', $config_ext))
+                        if (in_array($req_ext, $config[$value]) && $accept != false)
                         {
-                            if (is_file($dir . '/public/' . $url_val))
+                            $accept = $req_ext;
+
+                            /**
+                             *  -----------------------------------------------
+                             *  |   Checks if the next array key from URL exists in the config file
+                             *  -----------------------------------------------
+                             */
+                            if (array_key_exists($url[$index + 1], $config))
+                            {
+                                continue;
+                            }
+
+                            /**
+                             *  -----------------------------------------------
+                             *  |   Performs the logic for accepting current file 
+                             *  -----------------------------------------------
+                             */
+                            else
                             {
                                 http_response_code(200);
-                                $charset = $config_file["charset"];
-                                header("Content-type: */*, charset=$charset");
+                                header("Content-Type: $file_type");
 
-                                print_r(file_get_contents($dir . '/public/' . $url_val));
+                                print_r($file);
                                 self::log();
+
                                 exit;
                             }
                         }
+
+
+                        /**
+                         *  -----------------------------------------------------------
+                         *  |   Checks if * or image exists in the config file of the $value
+                         *  |   Then it accept all types of files or all types of image in the childrens folder
+                         *  -----------------------------------------------------------
+                         */
+                        else if (
+                        in_array('*', $config[$value]) ||
+                        (in_array('image', $config[$value]) && preg_match("/(image\/*)/", $file_type)) ||
+                        (in_array('video', $config[$value]) && preg_match("/(video\/*)/", $file_type)) ||
+                        (in_array('audio', $config[$value]) && preg_match("/(audio\/*)/", $file_type))
+                        && $accept != false
+                        )
+                        {
+                            $accept = '*';
+
+                            if (array_key_exists($url[$index + 1], $config))
+                            {
+                                continue;
+                            }
+
+                            /**
+                             *  -----------------------------------------------
+                             *  |   Performs the logic for accepting current file 
+                             *  -----------------------------------------------
+                             */
+                            else
+                            {
+                                http_response_code(200);
+                                header("Content-Type: $file_type");
+
+                                print_r($file);
+                                self::log();
+
+                                exit;
+                            }
+                        }
+                        else
+                        {
+                            $accept = false;
+                        }
+
                     }
                 }
 
 
                 /**
                  *  ------------------------------------------------------------------------
-                 *  |   If request url is a file from / and is in the root directory of public folder
+                 *  |   If request URL is a file from / and is in the root directory of public folder
                  *  ------------------------------------------------------------------------
                  */
                 if (
@@ -145,9 +225,8 @@ final class Route extends Controller
                 )
                 {
                     $req_ext = explode('.', $url[0]);
-                    $req_ext = end($req_ext);
+                    $req_ext = strtolower(end($req_ext));
                     $root = $config['/'];
-
 
                     /**
                      *  ---------------------------------------------------------------------------------------------
@@ -156,13 +235,20 @@ final class Route extends Controller
                      */
                     for ($i = 0; $i < count($root); $i++)
                     {
-                        if ($root[$i] === $req_ext || $root[$i] === '*')
+                        $root1 = strtolower($root[$i]);
+
+                        if (
+                        $root1 === $req_ext ||
+                        $root1 === '*' ||
+                        ($root1 === 'image' && preg_match("/(image\/*)/", $req_ext)) ||
+                        ($root1 === 'video' && preg_match("/(video\/*)/", $req_ext)) ||
+                        ($root1 === 'audio' && preg_match("/(audio\/*)/", $req_ext))
+                        )
                         {
                             http_response_code(200);
-                            $charset = $config_file["charset"];
-                            header("Content-type: */*, charset=$charset");
+                            header("Content-Type: $file_type");
 
-                            print_r(file_get_contents($dir . '/public/' . $url[0]));
+                            print_r($file);
                             self::log();
                             exit;
                         }
@@ -190,17 +276,40 @@ final class Route extends Controller
      *  |   Accept all type of request or any other method
      * 
      * 
-     *  |   Cannot evaluate `{ url parameters }` in route if it's an array 
+     *  |   Cannot evaluate `{ URL parameters }` in route if it's an array 
      *  |
      * 
-     *  @param array|string $route This describes the url string to render, use array of strings for multiple request
+     *  @param array|string $route This describes the URL string to check if it matches the request URL, use array of URLs for multiple request
+     *  @param mixed $callback Can contain any types of data to return to the client side/browser.
      *  
      *  ------------------------------------------------------------------------
      */
     public static function any(array|string $route, $callback, string $method = '*')
     {
-        // will store all the parameters value in this array
 
+        /**
+         *  --------------------------------------------------------------
+         * 
+         *  |   Not Found Error
+         * 
+         *  |   This * route serves as 404, which executes whenever there're no matching routes from the request url
+         *  |   which takes a callback parameter that is rendered to the webpage
+         * 
+         * --------------------------------------------------------------
+         */
+
+        if ((is_array($route) && in_array('*', $route) || $route === "*"))
+        {
+            http_response_code(404);
+            header("Content-Type: */*");
+
+            print_r(is_callable($callback) ? $callback() : $callback);
+            self::log();
+            exit;
+        }
+
+
+        // will store all the parameters value in this array
         $req = [];
         $req_value = [];
 
@@ -214,7 +323,6 @@ final class Route extends Controller
         }
 
         // if the route does not contain any param call routing();
-
         if (empty($paramMatches[0]) || is_array($route))
         {
             /**
@@ -229,21 +337,21 @@ final class Route extends Controller
 
             if ($callback)
             {
-                if (is_callable($callback))
-                {
-                    print_r($callback());
-                }
-                elseif (is_array($callback) && (preg_match("/(Controller)/", $callback[0], $matches) && count($matches) > 1))
+                if (is_array($callback) && (preg_match("/(Controller)/", $callback[0], $matches) && count($matches) > 1))
                 {
                     print_r(self::controller($callback[0], count($callback) > 1 ? $callback[1] : ''));
                 }
                 else
                 {
-                    print_r($callback);
+                    print_r(is_callable($callback) ? $callback() : $callback);
                 }
 
                 self::log();
                 exit;
+            }
+            else
+            {
+                return;
             }
         }
 
@@ -302,7 +410,7 @@ final class Route extends Controller
         {
             /** 
              *  --------------------------------------------------------------------------------
-             *  |   In case if req uri with param index is empty then return because url is not valid for this route
+             *  |   In case if req uri with param index is empty then return because URL is not valid for this route
              *  --------------------------------------------------------------------------------
              */
 
@@ -342,9 +450,8 @@ final class Route extends Controller
                 exit('Method Not Allowed');
             }
 
-            $charset = self::config_file()['charset'];
-            header("Content-type: */*, charset=$charset");
             http_response_code(200);
+            header("Content-Type: */*");
 
             if (is_array($callback) && (preg_match("/(Controller)/", $callback[0], $matches) && count($matches) > 1))
             {
@@ -358,6 +465,7 @@ final class Route extends Controller
             self::log();
             exit;
         }
+
     }
 
 
@@ -369,9 +477,9 @@ final class Route extends Controller
      * 
      *  |   Route only needs to return a view; you may provide an array for multiple request
      * 
-     *  |   View Route does not accept `{ url parameters }` in route, use GET method instead
+     *  |   View Route does not accept `{ URL parameters }` in route, use GET method instead
      *  
-     *      @param array|string $route This describes the url string to render, use array of strings for multiple request
+     *      @param array|string $route This describes the URL string to render, use array of strings for multiple request
      *      @param string $view It renders this param, it can be functions to render, view:: to render or strings of text or documents
      *  |
      * 
@@ -416,14 +524,10 @@ final class Route extends Controller
 
 
             // render view page to browser
-            $view = (view::render($view) !== false) ? view::render($view) : $view;
+            $view = (view::render($view) !== 'null') ? view::render($view) : $view;
 
-            if ($view)
+            if ($view != 'null')
             {
-                $charset = self::config_file()['charset'];
-                header("Content-type: */*, charset=$charset");
-                http_response_code(200);
-
                 print_r($view);
                 self::log();
                 exit;
@@ -439,26 +543,32 @@ final class Route extends Controller
      * 
      *  |   REDIRECT ROUTE METHOD
      * 
-     *  |   This method redirects the routes url to the giving url directly
+     *  |   This method redirects the routes URL to the giving URL directly
+     * 
+     *  @param string $route The requested url to redirect
+     *  @param string $new_url The new URL route to redirect to
+     *  @param int $code The code for redirect method, 301 for permanent redirecting & 302 for temporarily redirect.
      * 
      * ---------------------------------------------------------------
      */
-    final public static function redirect(string $route, string $new_url, int $code = 301)
+    final public static function redirect(string $route, string $new_url, int $code = 302)
     {
         if (!empty($_REQUEST["uri"]))
         {
             $route = preg_replace("/(^\/)|(\/$)/", "", $route);
+            $new_url = preg_replace("/(^\/)|(\/$)/", "", $new_url);
             $reqUri = preg_replace("/(^\/)|(\/$)/", "", $_REQUEST["uri"]);
         }
         else
         {
             $reqUri = "/";
+            $new_url = preg_replace("/(^\/)|(\/$)/", "", $new_url);
         }
 
         if ($reqUri === $route)
         {
-            header("Location: " . $new_url, true, $code);
-            exec('');
+            header("Location: $new_url", true, $code);
+            exit;
         }
     }
 
@@ -469,7 +579,7 @@ final class Route extends Controller
      * 
      *  |   GET ROUTE METHOD
      * 
-     *  |   Cannot evaluate { url parameters } in route if it's an array 
+     *  |   Cannot evaluate { URL parameters } in route if it's an array 
      * 
      *  --------------------------------------------------------------
      */
@@ -485,7 +595,7 @@ final class Route extends Controller
      * 
      *  |   POST ROUTE METHOD
      * 
-     *  |   Cannot evaluate { url parameters } in route if it's an array 
+     *  |   Cannot evaluate { URL parameters } in route if it's an array 
      * 
      *   --------------------------------------------------------------
      */
@@ -501,7 +611,7 @@ final class Route extends Controller
      * 
      *  |   UPDATE ROUTE METHOD
      * 
-     *  |   Cannot evaluate { url parameters } in route if it's an array 
+     *  |   Cannot evaluate { URL parameters } in route if it's an array 
      * 
      *  --------------------------------------------------------------
      */
@@ -517,7 +627,7 @@ final class Route extends Controller
      * 
      *  |   DELETE ROUTE METHOD
      * 
-     *  |   Cannot evaluate { url parameters } in route if it's an array 
+     *  |   Cannot evaluate { URL parameters } in route if it's an array 
      * 
      *  --------------------------------------------------------------
      */
@@ -526,27 +636,6 @@ final class Route extends Controller
         self::any($route, $callback, 'DELETE');
     }
 
-
-
-    /**
-     *  --------------------------------------------------------------
-     * 
-     *  |   Not Found Error
-     * 
-     *  |   This route serves as 404, which executes whenever there're no matching routes from the request url
-     *  |   which takes a callback parameter that is rendered to the webpage
-     * 
-     * --------------------------------------------------------------
-     */
-    final public static function notFound($callback)
-    {
-        $charset = self::config_file()['charset'];
-        header("Content-type: */*, charset=$charset");
-        http_response_code(404);
-
-        print_r(is_callable($callback) ? $callback() : $callback);
-        self::log();
-    }
 }
 
 
@@ -556,24 +645,24 @@ final class Route extends Controller
  * 
  *  |   Router View
  * 
- *  |   which control the public url and validating
+ *  |   which control the public URL and validating
  * 
  *  --------------------------------------------------------------
  */
-final class view
+final class view extends Controller
 {
 
     /**
      *  --------------------------------------------------------------
      * 
-     *  |   Render views and parse public url in views
+     *  |   Render views and parse public URL in views
      * 
      * @param string $view
      * @return string return the file gotten from the view parameters
      * 
      *  --------------------------------------------------------------
      */
-    final public static function render(string $view): string|bool
+    final public static function render(string $view): mixed
     {
         try
         {
@@ -583,13 +672,19 @@ final class view
 
             $file_uri = dirname(__DIR__) . $view_path;
 
-            if (is_file($file_uri . '.view.php'))
+            if (is_file($file_uri . '.view.php') && !preg_match("/(..\/)/", $view))
             {
-                return file_get_contents($file_uri . '.view.php');
+                $file_type = Route::file_type($file_uri . '.view.php');
+                header("Content-Type: $file_type");
+
+                return self::get_included_file($file_uri . '.view.php');
             }
-            else if (is_file($file_uri) && !is_dir($file_uri))
+            else if (is_file($file_uri) && !preg_match("/(..\/)/", $view))
             {
-                return file_get_contents($file_uri);
+                $file_type = Route::file_type($file_uri);
+                header("Content-Type: $file_type");
+
+                return self::get_included_file($file_uri);
             }
             else
             {
@@ -599,7 +694,7 @@ final class view
         catch ( Exception $e )
         {
             print($e->getMessage());
-            return false;
+            return 'null';
         }
     }
 }

@@ -41,6 +41,39 @@ class RouteController
 
 
     /**
+     *  -----------------------------------------------------------
+     *  |
+     *  @param mixed $filename The file which to gets the contents
+     *  @return mixed The executed included file received
+     *  |
+     *  -----------------------------------------------------------
+     */
+    protected static function get_included_file($filename)
+    {
+        if (is_file($filename))
+        {
+            ob_start();
+            include $filename;
+            $output = ob_get_contents();
+            ob_end_clean();
+
+            if ($output != false)
+            {
+                return $output;
+            }
+            else
+            {
+                throw new Exception("Empty file.");
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
+    /**
      *  ==============================
      *  |   Don't use this function!!!
      *  |   --------------------
@@ -76,8 +109,7 @@ class RouteController
                 exit('Method Not Allowed');
             }
 
-            $charset = self::config_file()['charset'];
-            header("Content-type: */*, charset=$charset");
+            header("Content-Type: */*");
             http_response_code(200);
 
             return $callback;

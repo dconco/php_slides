@@ -1,10 +1,11 @@
 {
     "public": {
-        "/": ["*"],
+        "/": [ "*" ],
         "assets": [
             "gif",
             "jpg",
             "svg",
+            "xml",
             "png",
             "jpeg",
             "webp",
@@ -21,14 +22,9 @@
             "txt",
             "readme"
         ],
-        "images": [
-            "gif",
-            "jpg",
-            "svg",
-            "png",
-            "jpeg",
-            "webp"
-        ],
+        "images": [ "image" ],
+        "videos": [ "video" ],
+        "audios": [ "audio" ],
         "styles": [
             "css",
             "scss",
@@ -45,7 +41,9 @@
             "css",
             "scss",
             "sass"
-        ]
+        ],
+        "png": [ "png" ],
+        "svg": [ "svg" ]
     },
     "charset": "UTF-8"
 }

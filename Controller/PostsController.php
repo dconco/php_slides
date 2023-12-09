@@ -2,11 +2,14 @@
 
 namespace PhpSlides\Controller;
 
+/**
+ * Example Route controller class
+ */
 final class PostsController extends Controller
 {
     public function __invoke()
     {
-        echo "Invoked Success";
+        return "Invoked Success";
     }
 
     public function Post(int $id)
