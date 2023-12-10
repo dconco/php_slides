@@ -21,18 +21,18 @@
             "./configs/env.config.php",
             "./configs/cors.php"
         ],
-        "classmap": ["*"]
+        "classmap": [ "*" ]
     },
     "scripts": {
         "slides-refresh": "composer dump-autoload",
         "create-slides-app": "composer create-project dconco/php_slides"
     },
-    "authors": [{
-        "name": "Dave Conco",
-        "email": "concodave@gmail.com"
-    }],
+    "authors": [ {
+            "name": "Dave Conco",
+            "email": "concodave@gmail.com"
+        } ],
     "require": {
-        "php": "^8.3",
+        "php": "^8.0",
         "firebase/php-jwt": "^6.9",
         "vlucas/phpdotenv": "^5.5"
     },
