@@ -48,12 +48,24 @@ class RouteController
      *  |
      *  -----------------------------------------------------------
      */
-    protected static function get_included_file($filename)
+    public static function get_included_file($filename)
     {
         if (is_file($filename))
         {
+            $file_contents = file_get_contents($filename);
+
+            $root = strtolower(Route::$root_dir . '/');
+            $root = str_replace('c:\\', 'c:\\\\', $root);
+
+            $find = '/routes/route.php';
+            $self = $_SERVER['PHP_SELF'];
+            $view = substr_replace($self, '/', strrpos($self, $find), strlen($find));
+
+            $file_contents = str_replace('::root::view/', $view, $file_contents);
+            $file_contents = str_replace('::root/', $root, $file_contents);
+
             ob_start();
-            include $filename;
+            eval('?>' . $file_contents);
             $output = ob_get_contents();
             ob_end_clean();
 
