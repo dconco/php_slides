@@ -46,6 +46,8 @@ final class Route extends Controller
      */
     public static bool $log;
 
+    public static string $root_dir;
+
 
     /**
      *  ------------------------------------------------------
@@ -61,11 +63,65 @@ final class Route extends Controller
     {
         if (is_file($filename))
         {
+            if (!extension_loaded('fileinfo'))
+            {
+                throw new Exception('Fileinfo extension is not enabled. Please enable it in your php.ini configuration.');
+            }
+
             $file_info = finfo_open(FILEINFO_MIME_TYPE);
-            $file_type = mime_content_type($filename);
+            $file_type = finfo_file($file_info, $filename);
             finfo_close($file_info);
 
-            return $file_type;
+            $file_ext = explode('.', $filename);
+            $file_ext = strtolower(end($file_ext));
+
+            if ($file_type === 'text/plain' || $file_type === 'application/octet-stream')
+            {
+                switch ($file_ext)
+                {
+                    case 'css':
+                        return 'text/css';
+                    case 'csv':
+                        return 'text/csv';
+                    case 'htm':
+                        return 'text/htm';
+                    case 'html':
+                        return 'text/html';
+                    case 'js':
+                        return 'application/javascript';
+                    case 'pdf':
+                        return 'application/pdf';
+                    case 'doc':
+                        return 'application/msword';
+                    case 'docx':
+                        return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+                    case 'xls':
+                        return 'application/vnd.ms-excel';
+                    case 'xlsx':
+                        return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                    case 'json':
+                        return 'application/json';
+                    case 'md':
+                        return 'text/markdown';
+                    case 'ppt':
+                        return 'application/mspowerpoint';
+                    case 'pptx':
+                        return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+                    case 'swf':
+                        return 'application/x-shockwave-flash';
+                    case 'ai':
+                        return 'application/postscript';
+                    case 'odt':
+                        return 'application/vnd.oasis.opendocument.text';
+
+                    default:
+                        return $file_type;
+                }
+            }
+            else
+            {
+                return $file_type;
+            }
         }
         else
         {
@@ -98,10 +154,14 @@ final class Route extends Controller
         try
         {
             self::$log = $request_log;
+            self::$root_dir = dirname(__DIR__);
 
             $dir = dirname(__DIR__);
             $req = preg_replace("/(^\/)|(\/$)/", "", $_REQUEST["uri"]);
             $url = explode('/', $req);
+
+            $req_ext = explode('.', end($url));
+            $req_ext = strtolower(end($req_ext));
 
             $file = self::get_included_file($dir . '/public/' . $req);
             $file_type = $file ? self::file_type($dir . '/public/' . $req) : null;
@@ -119,10 +179,6 @@ final class Route extends Controller
             if (!empty($config_file) && $file_type != null)
             {
                 $config = $config_file['public'];
-
-                // checks if the all URL / match the key in json
-                $req_ext = explode('.', end($url));
-                $req_ext = strtolower(end($req_ext));
                 $accept = true;
 
                 // loop over the requested URL folders

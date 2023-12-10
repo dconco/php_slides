@@ -4,7 +4,7 @@
 
 Use ***PhpSlides*** in creating of Very based secured Router, Api & database, created inbuilt template database which accepts - `MySql` & `Sqlite` database 🔥✨ can also setup other database.
 
-It has by default SQL injections, it prevents project from XXS attacks 🔐.
+It has by default in preventing SQL injections, it prevents project from XXS attacks & CSRF 🔐.
 
 It's a good practice for a beginner in Php to start with ***PhpSlides***
 
