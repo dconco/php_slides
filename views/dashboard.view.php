@@ -33,6 +33,10 @@
             <img src="::root::view/assets/svg/logo-no-background.svg" alt="PhpSlides Logo">
         </div>
 
+        <div class="description">
+            <p>PhpSlides let you create a secured Routing in php and secured API, which prevents SQL injections, and from XSS attack & CSRF.</p>
+        </div>
+
         <a href="./any"><button class="btn">Navigate To Not Found Page</button></a>
     </div>
 </body>
