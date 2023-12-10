@@ -22,7 +22,7 @@ Route::config();
  *  --------------------------------------------------------------------
  */
 
-Route::view('/dashboard', '::dashboard');
+Route::view('/dashboard', '::Dashboard');
 Route::redirect('/', '/dashboard');
 
-Route::any('*', view::render('::errors::404'));
+Route::any('*', view::render('::Errors::404'));
