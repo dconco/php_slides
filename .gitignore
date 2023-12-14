@@ -1,0 +1,4 @@
+/vendor/
+composer.lock
+access_log
+.log
