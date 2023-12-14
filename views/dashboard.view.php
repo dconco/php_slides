@@ -32,9 +32,9 @@
         </div>
 
         <div class="description">
-            <p>PhpSlides let you create a secured Routing in php and secured API, which prevents SQL injections, and from XSS attack & CSRF.
-              <br>
-              <br>
+            <p>
+              PhpSlides let you create a secured Routing in php and secured API, which prevents SQL injections, and from XSS attack & CSRF.
+              <br><br>
               <? @view 'Injected Code' ?>
             </p>
         </div>

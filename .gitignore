@@ -1,4 +1,4 @@
 /vendor/
+/access_log
 composer.lock
-access_log
 .log

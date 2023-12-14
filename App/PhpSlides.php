@@ -147,8 +147,8 @@ final class Route extends Controller
   {
     try {
       self::$log = $request_log;
-      self::$root_dir = htmlspecialchars(dirname(getcwd()));
-      self::$request_uri = htmlspecialchars($_REQUEST["uri"]);
+      self::$root_dir = parse_url(dirname(getcwd()), PHP_URL_PATH);
+      self::$request_uri = parse_url($_REQUEST["uri"], PHP_URL_PATH);
 
       $dir = self::$root_dir;
       $req = preg_replace("/(^\/)|(\/$)/", "", self::$request_uri);
@@ -323,7 +323,7 @@ final class Route extends Controller
      */
 
     if ((is_array($route) && in_array("*", $route)) || $route === "*") {
-      http_response_code(404);
+      header("HTTP/1.0 404 Not Found");
       header("Content-Type: */*");
 
       print_r(is_callable($callback) ? $callback() : $callback);
@@ -608,6 +608,20 @@ final class Route extends Controller
   /**
    *  --------------------------------------------------------------
    *
+   *  |  PUT ROUTE METHOD
+   *
+   *  |  Cannot evaluate { URL parameters } in route if it's an array
+   *
+   *  --------------------------------------------------------------
+   */
+  final public static function put(array|string $route, $callback)
+  {
+    self::any($route, $callback, "PUT");
+  }
+
+  /**
+   *  --------------------------------------------------------------
+   *
    *  |  UPDATE ROUTE METHOD
    *
    *  |  Cannot evaluate { URL parameters } in route if it's an array
@@ -617,6 +631,20 @@ final class Route extends Controller
   final public static function update(array|string $route, $callback)
   {
     self::any($route, $callback, "UPDATE");
+  }
+
+  /**
+   *  --------------------------------------------------------------
+   *
+   *  |  PATCH ROUTE METHOD
+   *
+   *  |  Cannot evaluate { URL parameters } in route if it's an array
+   *
+   *  --------------------------------------------------------------
+   */
+  final public static function patch(array|string $route, $callback)
+  {
+    self::any($route, $callback, "PATCH");
   }
 
   /**
