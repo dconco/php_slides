@@ -27,7 +27,7 @@ use PhpSlides\Controller\Controller;
  *  ---------------------------------------------------------------------------------
  */
 
-final class Route extends Controller
+abstract class Route extends Controller
 {
   /**
    *  ----------------------------------------------------------------------------------------------------------
@@ -280,9 +280,16 @@ final class Route extends Controller
             }
           }
         }
-
-        $request_log == true ? (self::$log = true) : (self::$log = false);
       }
+
+      /**
+       *  ----------------------------------------------
+       *  | Includes The Web Api
+       *  ----------------------------------------------
+       */
+      include_once $dir . "/routes/api.php";
+
+      $request_log == true ? (self::$log = true) : (self::$log = false);
     } catch (Exception $e) {
       print $e->getMessage();
       exit();
@@ -504,7 +511,7 @@ final class Route extends Controller
    *
    *  ---------------------------------------------------------------------------
    */
-  final public static function view(array|string $route, string $view)
+  public static function view(array|string $route, string $view)
   {
     /**
      *  ----------------------------------------
@@ -557,7 +564,7 @@ final class Route extends Controller
    *
    * ---------------------------------------------------------------
    */
-  final public static function redirect(
+  public static function redirect(
     string $route,
     string $new_url,
     int $code = 302
@@ -586,7 +593,7 @@ final class Route extends Controller
    *
    *  --------------------------------------------------------------
    */
-  final public static function get(array|string $route, $callback)
+  public static function get(array|string $route, $callback)
   {
     self::any($route, $callback, "GET");
   }
@@ -600,7 +607,7 @@ final class Route extends Controller
    *
    *  --------------------------------------------------------------
    */
-  final public static function post(array|string $route, $callback)
+  public static function post(array|string $route, $callback)
   {
     self::any($route, $callback, "POST");
   }
@@ -614,7 +621,7 @@ final class Route extends Controller
    *
    *  --------------------------------------------------------------
    */
-  final public static function put(array|string $route, $callback)
+  public static function put(array|string $route, $callback)
   {
     self::any($route, $callback, "PUT");
   }
@@ -628,7 +635,7 @@ final class Route extends Controller
    *
    *  --------------------------------------------------------------
    */
-  final public static function update(array|string $route, $callback)
+  public static function update(array|string $route, $callback)
   {
     self::any($route, $callback, "UPDATE");
   }
@@ -642,7 +649,7 @@ final class Route extends Controller
    *
    *  --------------------------------------------------------------
    */
-  final public static function patch(array|string $route, $callback)
+  public static function patch(array|string $route, $callback)
   {
     self::any($route, $callback, "PATCH");
   }
@@ -656,7 +663,7 @@ final class Route extends Controller
    *
    *  --------------------------------------------------------------
    */
-  final public static function delete(array|string $route, $callback)
+  public static function delete(array|string $route, $callback)
   {
     self::any($route, $callback, "DELETE");
   }

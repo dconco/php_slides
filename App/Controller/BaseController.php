@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PhpSlides\Controller;
 
-class Controller extends RouteController
+abstract class Controller extends RouteController
 {
-    /**
-     * Hidden Body function
-     */
+  /* Hidden Body function */
 }
