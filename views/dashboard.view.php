@@ -26,7 +26,7 @@
 </head>
 
 <body>
-    <div class=" container">
+    <div class="container">
         <div class="logo">
             <img src="::view/assets/svg/logo-no-background.svg" alt="PhpSlides Logo">
         </div>

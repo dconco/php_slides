@@ -2,6 +2,5 @@
 
 use PhpSlides\Api;
 
-Api::get("posts", function () {
-  echo "Post";
-});
+Api::get("/posts");
+Api::post("/posts/{id}", @Post);

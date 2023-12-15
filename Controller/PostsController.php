@@ -3,17 +3,28 @@
 namespace PhpSlides\Controller;
 
 /**
- * Example Route controller class
+ * Example Api Route controller class
  */
 final class PostsController extends Controller
 {
-    public function __invoke()
-    {
-        return "Invoked Success";
-    }
+  public function __invoke()
+  {
+    $resolve = [
+      "status" => 200,
+      "data" => "Invoked Successful.",
+    ];
 
-    public function Post(int $id)
-    {
-        return "Post Page " . $id;
-    }
+    return json_encode($resolve);
+  }
+
+  public function Post(int $id)
+  {
+    $resolve = [
+      "status" => 200,
+      "post_id" => $id,
+      "data" => "Post Page = $id",
+    ];
+
+    return json_encode($resolve);
+  }
 }

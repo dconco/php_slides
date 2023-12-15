@@ -27,7 +27,7 @@ use PhpSlides\Controller\Controller;
  *  ---------------------------------------------------------------------------------
  */
 
-abstract class Route extends Controller
+final class Route extends Controller
 {
   /**
    *  ----------------------------------------------------------------------------------------------------------
@@ -147,8 +147,8 @@ abstract class Route extends Controller
   {
     try {
       self::$log = $request_log;
-      self::$root_dir = parse_url(dirname(getcwd()), PHP_URL_PATH);
-      self::$request_uri = parse_url($_REQUEST["uri"], PHP_URL_PATH);
+      self::$root_dir = htmlspecialchars(dirname(getcwd()));
+      self::$request_uri = htmlspecialchars($_REQUEST["uri"]);
 
       $dir = self::$root_dir;
       $req = preg_replace("/(^\/)|(\/$)/", "", self::$request_uri);
@@ -287,7 +287,16 @@ abstract class Route extends Controller
        *  | Includes The Web Api
        *  ----------------------------------------------
        */
-      include_once $dir . "/routes/api.php";
+
+      $content = file_get_contents($dir . "/routes/api.php");
+      $content = preg_replace("/@(\w+)/", "'$1'", $content);
+
+      ob_start();
+      eval("?>" . $content);
+      $content = ob_get_contents();
+      ob_end_clean();
+
+      echo $content;
 
       $request_log == true ? (self::$log = true) : (self::$log = false);
     } catch (Exception $e) {
@@ -305,7 +314,7 @@ abstract class Route extends Controller
    *  |  Accept all type of request or any other method
    *
    *
-   *  |  Cannot evaluate `{ URL parameters }` in route if it's an array
+   *  |  Cannot evaluate `{?} URL parameters` in route if it's an array
    *  |
    *
    *  @param array|string $route This describes the URL string to check if it matches the request URL, use array of URLs for multiple request
@@ -441,9 +450,8 @@ abstract class Route extends Controller
       }
 
       // setting params with params names
-      $req[$paramKey[$key]] = $reqUri[$index];
-
-      $req_value[] = $reqUri[$index];
+      $req[$paramKey[$key]] = htmlspecialchars($reqUri[$index]);
+      $req_value[] = htmlspecialchars($reqUri[$index]);
 
       // this is to create a regex for comparing route address
       $reqUri[$index] = "{.*}";
@@ -503,7 +511,7 @@ abstract class Route extends Controller
    *
    *  |  Route only needs to return a view; you may provide an array for multiple request
    *
-   *  |  View Route does not accept `{ URL parameters }` in route, use GET method instead
+   *  |  View Route does not accept `{?} URL parameters` in route, use GET method instead
    *
    *    @param array|string $route This describes the URL string to render, use array of strings for multiple request
    *    @param string $view It renders this param, it can be functions to render, view:: to render or strings of text or documents
@@ -589,7 +597,7 @@ abstract class Route extends Controller
    *
    *  |  GET ROUTE METHOD
    *
-   *  |  Cannot evaluate { URL parameters } in route if it's an array
+   *  |  Cannot evaluate {?} URL parameters in route if it's an array
    *
    *  --------------------------------------------------------------
    */
@@ -603,7 +611,7 @@ abstract class Route extends Controller
    *
    *  |  POST ROUTE METHOD
    *
-   *  |  Cannot evaluate { URL parameters } in route if it's an array
+   *  |  Cannot evaluate {?} URL parameters in route if it's an array
    *
    *  --------------------------------------------------------------
    */
@@ -617,7 +625,7 @@ abstract class Route extends Controller
    *
    *  |  PUT ROUTE METHOD
    *
-   *  |  Cannot evaluate { URL parameters } in route if it's an array
+   *  |  Cannot evaluate {?} URL parameters in route if it's an array
    *
    *  --------------------------------------------------------------
    */
@@ -631,7 +639,7 @@ abstract class Route extends Controller
    *
    *  |  UPDATE ROUTE METHOD
    *
-   *  |  Cannot evaluate { URL parameters } in route if it's an array
+   *  |  Cannot evaluate {?} URL parameters in route if it's an array
    *
    *  --------------------------------------------------------------
    */
@@ -645,7 +653,7 @@ abstract class Route extends Controller
    *
    *  |  PATCH ROUTE METHOD
    *
-   *  |  Cannot evaluate { URL parameters } in route if it's an array
+   *  |  Cannot evaluate {?} URL parameters in route if it's an array
    *
    *  --------------------------------------------------------------
    */
@@ -659,7 +667,7 @@ abstract class Route extends Controller
    *
    *  |  DELETE ROUTE METHOD
    *
-   *  |  Cannot evaluate { URL parameters } in route if it's an array
+   *  |  Cannot evaluate {?} URL parameters in route if it's an array
    *
    *  --------------------------------------------------------------
    */
