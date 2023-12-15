@@ -63,7 +63,7 @@ final class Route extends Controller
     if (is_file($filename)) {
       if (!extension_loaded("fileinfo")) {
         throw new Exception(
-          "Fileinfo extension is not enabled. Please enable it in your php.ini configuration."
+          "Fileinfo extension is not enabled. Please enable it in your php.ini configuration.",
         );
       }
 
@@ -325,7 +325,7 @@ final class Route extends Controller
   public static function any(
     array|string $route,
     $callback,
-    string $method = "*"
+    string $method = "*",
   ) {
     /**
      *  --------------------------------------------------------------
@@ -380,8 +380,8 @@ final class Route extends Controller
           print_r(
             self::controller(
               $callback[0],
-              count($callback) > 1 ? $callback[1] : ""
-            )
+              count($callback) > 1 ? $callback[1] : "",
+            ),
           );
         } else {
           print_r(is_callable($callback) ? $callback() : $callback);
@@ -492,8 +492,8 @@ final class Route extends Controller
           self::controller(
             $callback[0],
             count($callback) > 1 ? $callback[1] : "",
-            $req_value
-          )
+            $req_value,
+          ),
         );
       } else {
         print_r(is_callable($callback) ? $callback(...$req_value) : $callback);
@@ -534,11 +534,11 @@ final class Route extends Controller
 
     if (is_array($route)) {
       for ($i = 0; $i < count($route); $i++) {
-        $each_route = preg_replace("/(^\/)|(\/)/", "", $route[$i]);
+        $each_route = preg_replace("/(^\/)|(\/$)/", "", $route[$i]);
         array_push($uri, $each_route);
       }
     } else {
-      $str_route = preg_replace("/(^\/)|(\/)/", "", $route);
+      $str_route = preg_replace("/(^\/)|(\/$)/", "", $route);
     }
 
     if (in_array($reqUri, $uri) || $reqUri === $str_route) {
@@ -575,7 +575,7 @@ final class Route extends Controller
   public static function redirect(
     string $route,
     string $new_url,
-    int $code = 302
+    int $code = 302,
   ) {
     if (!empty(self::$request_uri)) {
       $route = preg_replace("/(^\/)|(\/$)/", "", $route);

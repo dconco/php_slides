@@ -104,11 +104,11 @@ class RouteController
 
     if (is_array($route)) {
       for ($i = 0; $i < count($route); $i++) {
-        $each_route = preg_replace("/(^\/)|(\/)/", "", $route[$i]);
+        $each_route = preg_replace("/(^\/)|(\/$)/", "", $route[$i]);
         array_push($uri, $each_route);
       }
     } else {
-      $str_route = preg_replace("/(^\/)|(\/)/", "", $route);
+      $str_route = preg_replace("/(^\/)|(\/$)/", "", $route);
     }
 
     if (in_array($reqUri, $uri) || $reqUri === $str_route) {
