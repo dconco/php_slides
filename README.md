@@ -474,6 +474,13 @@ For the `images` directory we specified that it can only access the any files th
 
 To view all files that are in `public` directory with files in nested folders. You woudn't add the `public` folder before getting files, it'll return `Not Found page`. So like the above example, to access the file in the `assets` folder. We would follow the url: `http://localhost:8000/assets/image.jpg` and not `http://localhost:8000/public/assets/image.jpg`. And if files are in the root directory of the project, it would be accessed directly after the host url: `http://localhost:8000/image.jpg`.
 
+
+# Version 1.1.0
+- Read official documentation 
+
+# Version 1.2.0
+- Read official documentation
+
 ***HURRAY as you enjoy using PhpSlides!!!***
 
 ***More functions are coming in the next versions***
