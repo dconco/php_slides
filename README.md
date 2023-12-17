@@ -472,7 +472,210 @@ For the `images` directory we specified that it can only access the any files th
 
 ### View Public Files in Web
 
-To view all files that are in `public` directory with files in nested folders. You woudn't add the `public` folder before getting files, it'll return `Not Found page`. So like the above example, to access the file in the `assets` folder. We would follow the url: `http://localhost:8000/assets/image.jpg` and not `http://localhost:8000/public/assets/image.jpg`. And if files are in the root directory of the project, it would be accessed directly after the host url: `http://localhost:8000/image.jpg`.
+To view all files that are in `public` directory with files in nested folders. You woudn't add the `public` folder before getting files, it'll return `Not Found page`. So like the above example, to access the file in the `assets` folder. We would follow the url: `http://localhost:8000/assets/image.jpg` and not `http://localhost:8000/public/assets/image.jpg`. 
+And if files are in the root directory of the project, it would be accessed directly after the host url: `http://localhost:8000/image.jpg`.
+
+
+# Version 1.1.0
+In this version, slides provides way in dealing with view page 🔥
+Create your view template file in the `views` directory, in this format `fileName` + `.view.php` extension. which is `fileName.view.php`
+
+PhpSlides created some special view syntax.
+- @view
+- ::view
+- ::root
+- <include !/>
+- `<? ?>`
+
+Lets get this started..
+
+```php (slides)
+  <!DOCTYPE html>
+  <html>
+    <!-- Php codes if needed -->
+    <?
+    
+    ?>
+  
+    <head>
+      <!-- Meta Tags Info -->
+      <title>Page Title</title>
+    </head>
+    <body>
+      <!-- Body contents -->
+    </body>
+  </html>
+```
+
+In a view template page where we writes HTML codes, PHP tag should not starts the file, 
+instead write the php tag and codes inside the `<html>` tag or any other places apart from the starting, 
+should always start HTML documents with the `<html>` tag and not `<?php` tag
+
+The `<? ?>` tag in the view template is short php tag used in writing short php codes. 
+like using if statement, or echoing data to the html page. Example codes:
+
+```php (slides)
+  <body>
+    <? if ($user): ?>
+      <h1>Hello <? @view $user ?></h1>
+    <? else: ?>
+      <h1>Hello Guest</h1>
+    <? endif; ?>
+    
+    <p>
+      <? @view 'welcome to our blog spot!' ?>
+    </p>
+  </body>
+```
+
+This example is explained as: in the body element we check if a user returns true then it'll add the `h1` element with the text Hello with the user variable value which is returned using the @view keyword in slides.
+Else it'll return and `h1` element with text Hello Guest
+In the `<p>` tag we wrote php codes which uses the `@view` keyword to return the string/value to the `<p>` element.
+
+__::view & ::root__
+
+The `::view` is just a word written only in the view template files which return the root location after the server name in the project starting from the `/`. Usually used to link public files.
+And the `::root` is returning the root location of your project and not has the `::view`, `::root` is used in php in including any files of the project, 
+but `::view` can just access only what the browser/client side can acces, but cannot access any files in project when not in `public` directory.
+
+Now let's imagine we have images we would access in the public directory and extra php file we would need to include in the view page.
+
+```php (slides)
+  <body>
+    <? include '::root/components/extraFile.php' ?>
+    
+    <div>
+      <img src="::view/assets/icon.png" alt="Icon" />
+    </div>
+  </body>
+```
+
+In this case the root of the project is indicated as `::root` and inside the project we created a folder called `components` and new file called `extraFile.php` for any php codes to include in the view page.
+
+The `::view` is the root location of the server host, so let's imagine the host url as `http://localhost:8000/` so it's indicated as `::view` and normally in slides, 
+all files and folders in `public` directory are extended in the root of the url as `::view/` and not `::view/public`
+
+So the url as `::view/assets/icon.png` in the `public` directory, created a `assets` folder and `icon.png` image.
+
+__SLIDES INCLUDE__
+
+Slides provides way for you to include another view template file to a view page, and not only a php files.
+
+__2 ways of including view page__
+
+- Using the `<include !/>` html tag
+- Using the `slides_include` php function
+
+With the `<include !/>` html tag, you can include other php/view page to the current view page. 
+Which allows you to write slides view template in other files to include. And can also include any other php file located anywhere in the project.
+
+```html
+  <body>
+    <include path="::root/components/extraFile.php" !/>
+    <include path="::root/views/viewPage.view.php" !/>
+  </body>
+```
+
+So in the first tag we included a php file located at the `components` directory.
+And the second tag we included a view template file located in the `views` directory.
+And can only use the `<include !/>` tag in a view template page.
+
+__slides_include__
+
+This function provides a way for you to include view files in any php file & not only on the view template page.
+
+```php (slides)
+  <? @view slides_include('::root/comp/extraFile.php') ?>
+  <? @view slides_include('::root/views/page.view.php') ?>
+```
+
+
+# Version 1.2.0
+
+## API
+
+PhpSlides realeased APIs in -v1.2.0, which allows you to work with API in your project.
+API is just like Route but it's rendering data back to the request and not the browser.
+Slides provide the `Api` function which allows you to register an API route. And setted up the API controller in the `web.php` file.
+Register your new API route in the `routes/api.php` file
+
+```php (slides)
+  <?php
+    use PhpSlides\Api;
+    
+    Api::get();
+    Api::post();
+    Api::put();
+    Api::patch();
+    Api::update();
+    Api::delete();
+  ?>
+```
+
+In the above example blocks of code, we create APIs and those are the API request method that are available in the API.
+The `Api` function only takes 2 parameters, the API route url and the second parameter is the controller class method.
+
+___NOTE___ that before you can create API, make sure you setted up the `Route::config()` function in the `route.php` file even though you're not to use the web Route.
+
+Let's create an API for the given request route `"/api/users"` with a POST method which would show the list of available users in a database.
+And create another route `"/api/users/{id}"` also a POST method which would show a particular user by the given id.
+
+```php (slides)
+  <?php
+    use PhpSlides\Api;
+    
+    Api::post("/api/users");
+    Api::post("/api/users/{id}", @user);
+  ?>
+```
+
+So in the first Api we didn't provide a second parameter for the method to use which by default is `__invoke` method.
+And in the second we use the `@user` which declears the `user` method of the same controller class. The `@` target the method name of the controller class.
+
+Let's first create our controller class in the `Controller/Api` directory. Let's name it `UserController`. 
+In our controller names, it is must the `Controller` to end a file, which describes a controller file.
+
+```php (slides)
+  <?php
+  
+  namespace PhpSlides\Controller;
+  
+  final class UserController extends Controller
+  {
+    function __invoke() {
+      $response = ['data' => 'We have gotten all users id successful'];
+      return json_encode($response);
+    }
+    
+    function user(int $id) {
+      $response = ['data' => 'The particular user id = $id'];
+      return json_encode($response);
+    }
+  }
+  
+  ?>
+```
+
+In the `UserController` class we created the two functional methods and retun an encoded json format.
+
+Not yet done.. We need to register each API routes url for controller class in the `src/web.php` file.
+
+```php (slides)
+  <?php
+  
+  use PhpSlides\Controller\UserController;
+  
+  return [
+    '/api/users' => UserController::class,
+    '/api/users/{id}' => UserController::class
+  ];
+  
+  ?>
+```
+
+
+We returned the register API routes now API is ready to be consumed ❤️💯.
+
 
 ***HURRAY as you enjoy using PhpSlides!!!***
 
