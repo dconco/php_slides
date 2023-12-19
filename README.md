@@ -676,14 +676,6 @@ Not yet done.. We need to register each API routes url for controller class in t
 
 We returned the register API routes now API is ready to be consumed ❤️💯.
 
-
-
-# Version 1.1.0
-- Read official documentation 
-
-# Version 1.2.0
-- Read official documentation
-
 ***HURRAY as you enjoy using PhpSlides!!!***
 
 ***More functions are coming in the next versions***
