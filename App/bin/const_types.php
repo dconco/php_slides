@@ -1,5 +1,14 @@
 <?php
 
-return [
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9
-];
+return array(
+  928 =>
+  array(
+    0 => 'PhpSlides\\Controller\\PostsController',
+    1 => '__invoke',
+  ),
+  443 =>
+  array(
+    0 => 'PhpSlides\\Controller\\PostsController',
+    1 => 'Post',
+  ),
+);

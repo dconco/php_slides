@@ -337,9 +337,12 @@ final class Route extends Controller
             $data = "<?php\n\n";
 
             $arr_num = [];
+            $arr_const_types = [];
             $arr_keys = array_keys($web_file);
             $arr_vals = array_values($web_file);
 
+            // Looping over the web.php array
+            // Generate random array number key to store in bin const_types
             for ($i = 0; $i < count($web_file); $i++)
             {
                 $rand = rand(0, 999);
@@ -347,12 +350,19 @@ final class Route extends Controller
                 if (in_array($rand, $arr_num))
                 {
                     $rand = rand(0, 9999);
+                    array_push($arr_num, $rand);
+                    $arr_const_types[$rand] = $arr_vals[$i];
                 }
                 else
                 {
                     array_push($arr_num, $rand);
+                    $arr_const_types[$rand] = $arr_vals[$i];
                 }
             }
+
+            // Add the const_types information to the file
+            $const_types_data = "<?php\n\nreturn " . var_export($arr_const_types, true) . ';';
+            file_put_contents($dir . '/App/bin/const_types.php', $const_types_data);
 
             $arr_index = 0;
             // Looping over the web.php array
