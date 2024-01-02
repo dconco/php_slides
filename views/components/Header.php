@@ -4,47 +4,13 @@
 
 <link rel="apple-touch-icon" href="::view/assets/icons/icon.png" sizes="234x234" />
 <link rel="shortcut icon" href="::view/assets/icons/icon.png" type="image/png" />
-<link rel="icon" href="::view/assets/images/icons/icon.png" type="image/png" />
+<link rel="icon" href="::view/assets/icons/icon.png" type="image/png" />
 
 <!-- CSS Links -->
 <link rel="stylesheet" type="text/css" href="::view/styles/App.css">
 
 <!-- Internal Styling -->
 <style>
-    @keyframes ZoomIn {
-        from {
-            transform: scale(0, 0);
-        }
-
-        75% {
-            transform: scale(1.2, 1.2);
-        }
-
-        to {
-            transform: scale(1, 1);
-        }
-    }
-
-    @keyframes ReSeize {
-        50% {
-            transform: scale(1.15, 1.15);
-        }
-
-        100% {
-            transform: scale(1, 1);
-        }
-    }
-
-    @keyframes ButtonAnim {
-        0% {
-            transform: scale(1.3, 1.3);
-        }
-
-        100% {
-            transform: scale(1, 1);
-        }
-    }
-
     .container {
         width: 70%;
         height: 70%;
