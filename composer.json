@@ -2,7 +2,7 @@
     "name": "dconco/php_slides",
     "description": "PhpSlides a light fast framework for letting you create a secured Routing in php and secured API, which prevents SQL injections, and from XSS attack & CSRF.",
     "homepage": "https://github.com/dconco/php_slides",
-    "version": "v1.2.1-alpha",
+    "version": "1.2.1-alpha",
     "type": "project",
     "keywords": [
         "php",
