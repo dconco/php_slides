@@ -14,6 +14,6 @@ final class UserController extends Controller
 
   public function User(string $user_name)
   {
-    return "User ID = $user_name";
+    return "Username = $user_name";
   }
 }

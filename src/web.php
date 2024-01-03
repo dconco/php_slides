@@ -1,10 +1,8 @@
 <?php
 
-use PhpSlides\Controller\PostsController;
-
-echo 'Hello';
+use PhpSlides\Controller\Api\PostsController;
 
 return [
-  "post_invoke" => [ PostsController::class, '__invoke' ],
+  "post_invoke" => [ PostsController::class, '' ],
   "post" => [ PostsController::class, 'Post' ],
 ];

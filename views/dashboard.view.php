@@ -9,7 +9,7 @@
 <html lang="en">
 
 <!-- PHP code start -->
-<? '' ?>
+<?php $text = 'Click to view documentation' ?>
 <!-- // End PHP code -->
 
 <head>
@@ -61,7 +61,9 @@
             </p>
             <p>
                 <a href="//packagist.org/packages/dconco/php_slides" class="link">
-                    <? 'Click to view documentation' ?>
+                    <!-- Call out variables or any php code to render in the client-side with <? '' ?> tag -->
+                    <!-- This function is available for version above 1.2.0 -->
+                    <? $text ?>
                 </a>
             </p>
         </div>

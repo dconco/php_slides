@@ -1,0 +1,6 @@
+<?php
+
+(function ()
+{
+	@'generated pages';
+})();
