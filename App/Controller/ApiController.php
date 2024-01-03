@@ -27,9 +27,7 @@ final class Api extends Controller
      *
      *    |    ANY REQUEST FROM API ENDPOINT
      *
-     *
      *    |    Accept all type of request or any other method
-     *
      *
      *    |    Cannot evaluate `{?} URL parameters` in api route if it's an array
      *    |
@@ -39,14 +37,10 @@ final class Api extends Controller
      *
      *    ------------------------------------------------------------------------
      */
-    final public static function any(
-        array|string $route,
-        int $class_method,
-        string $method = "*",
-    ) {
+    final public static function any(array|string $route, int $class_method, string $method = "*")
+    {
         try
         {
-            $real_route = $route;
             $dir = Route::$root_dir;
 
             // will store all the parameters value in this array
@@ -55,6 +49,16 @@ final class Api extends Controller
 
             // will store all the parameters names in this array
             $paramKey = [];
+
+
+            // Gets all constant int values wrapped in an array
+            ob_start();
+            $bin_const_types = include $dir . "/App/bin/const_types.php";
+            ob_end_clean();
+
+            $bin_const_types = unserialize(hex2bin(($bin_const_types)));
+            $const_types_method = $bin_const_types[$class_method][1];
+            $const_types_class = $bin_const_types[$class_method][0];
 
             // finding if there is any {?} parameter in $route
             if (is_string($route))
@@ -78,24 +82,19 @@ final class Api extends Controller
 
                 if ($class_method)
                 {
-                    ob_start();
-                    $web_file = include $dir . "/src/web.php";
-                    ob_end_clean();
-
                     if (
-                    array_key_exists($real_route, $web_file) &&
-                    (preg_match("/(Controller)/", $web_file[$real_route], $matches) &&
-                    count($matches) > 1)
+                    (preg_match("/(Controller)/", $const_types_class, $matches) && count($matches) > 1) &&
+                    (preg_match("/(Api)/", $const_types_class, $matches) && count($matches) > 0)
                     )
                     {
                         http_response_code(200);
                         header("Content-Type: application/json");
 
-                        print_r(self::controller($web_file[$real_route], $class_method));
+                        print_r(self::controller($const_types_class, $const_types_method));
                     }
                     else
                     {
-                        throw new Exception("API route class is not registered!");
+                        throw new Exception("Invalid api controller class or not existing: " . $const_types_class);
                     }
 
                     self::log();
@@ -204,28 +203,23 @@ final class Api extends Controller
                     exit("Method Not Allowed");
                 }
 
-                ob_start();
-                $web_file = include $dir . "/src/web.php";
-                ob_end_clean();
-
                 if (
-                array_key_exists($real_route, $web_file) &&
-                (preg_match("/(Controller)/", $web_file[$real_route], $matches) &&
-                count($matches) > 1)
+                (preg_match("/(Controller)/", $const_types_class, $matches) && count($matches) > 1) &&
+                (preg_match("/(Api)/", $const_types_class, $matches) && count($matches) > 0)
                 )
                 {
                     http_response_code(200);
                     header("Content-Type: application/json");
 
                     print_r(
-                        self::controller($web_file[$real_route], $class_method, [
+                        self::controller($const_types_class, $const_types_method, [
                             ...$req_value,
                         ]),
                     );
                 }
                 else
                 {
-                    throw new Exception("API route class is not registered!");
+                    throw new Exception("Invalid api controller class or not existing: " . $const_types_class);
                 }
 
                 self::log();
@@ -252,7 +246,7 @@ final class Api extends Controller
      */
     public static function get(
         array|string $route,
-        string $class_method = "__invoke",
+        int $class_method,
     ) {
         self::any($route, $class_method, "GET");
     }
@@ -270,7 +264,7 @@ final class Api extends Controller
      */
     public static function post(
         array|string $route,
-        string $class_method = "__invoke",
+        int $class_method,
     ) {
         self::any($route, $class_method, "POST");
     }
@@ -288,7 +282,7 @@ final class Api extends Controller
      */
     public static function put(
         array|string $route,
-        string $class_method = "__invoke",
+        int $class_method,
     ) {
         self::any($route, $class_method, "PUT");
     }
@@ -306,7 +300,7 @@ final class Api extends Controller
      */
     public static function update(
         array|string $route,
-        string $class_method = "__invoke",
+        int $class_method,
     ) {
         self::any($route, $class_method, "UPDATE");
     }
@@ -324,7 +318,7 @@ final class Api extends Controller
      */
     public static function patch(
         array|string $route,
-        string $class_method = "__invoke",
+        int $class_method,
     ) {
         self::any($route, $class_method, "PATCH");
     }
@@ -342,7 +336,7 @@ final class Api extends Controller
      */
     public static function delete(
         array|string $route,
-        string $class_method = "__invoke",
+        int $class_method,
     ) {
         self::any($route, $class_method, "DELETE");
     }
