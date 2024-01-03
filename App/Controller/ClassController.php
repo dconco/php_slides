@@ -40,7 +40,7 @@ class ClassController extends Controller
             }
             else
             {
-                throw new Exception("No Controller class found in - $class", 1);
+                throw new Exception("No Controller class found as - $class", 1);
             }
         }
         catch ( Exception $e )

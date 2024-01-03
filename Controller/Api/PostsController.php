@@ -1,6 +1,9 @@
 <?php
 
-namespace PhpSlides\Controller;
+namespace PhpSlides\Controller\Api;
+
+use PhpSlides\Controller\Controller;
+
 
 /**
  * Example Api Route controller class

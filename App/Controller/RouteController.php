@@ -75,7 +75,7 @@ class RouteController
             $file_contents = preg_replace_callback('/<\? ([^?]*)\?>/s', function ($matches)
             {
                 $val = trim($matches[1]);
-                return "<?php echo($val) ?>";
+                return "<?php print_r($val) ?>";
             }, $file_contents);
 
             $file_contents = str_replace('::view/', $view, $file_contents);
@@ -122,10 +122,7 @@ class RouteController
      *    |    --------------------
      *    ==============================
      */
-    protected static function routing(
-        array|string $route,
-        $callback,
-        string $method = "*",
+    protected static function routing(array|string $route, mixed $callback, string $method = "*",
     ) {
         $uri = [];
         $str_route = "";
@@ -256,7 +253,7 @@ class RouteController
             )
             {
                 throw new Exception(
-                    "No Controller method found as $method. Try using __invoke method.",
+                    "No Controller method found as '$method'. Try using __invoke method.",
                     1
                 );
             }
