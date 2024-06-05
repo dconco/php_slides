@@ -903,59 +903,49 @@ final class view extends Controller
 {
 
 	/**
-	 *   --------------------------------------------------------------
-	 *
-	 *   |  This method is used in rendering views and parsing public URL in views.
-	 *
-	 * @param string $view
-	 * @return string return the file gotten from the view parameters
-	 *
-	 *   --------------------------------------------------------------
-	 */
-	final public static function render(string $view): mixed
-	{
-		try
-		{
-			/**
-			 *	Retrieves the charset from the configuration file.
-			 * 
-			 *	The above code is retrieving the value of the 'charset' key from the 'config_file' array.
-			 * The 'config_file' array is obtained using the 'config_file' method of the current class.
-			 *
-			 * @return string The charset value.
-			 */
-			$config_file = self::config_file();
-			$charset = $config_file['charset'];
+     *   --------------------------------------------------------------
+     *
+     *   |   Render views and parse public URL in views
+     *
+     * @param string $view
+     * @return mixed return the file gotten from the view parameters
+     *
+     *   --------------------------------------------------------------
+     */
+    final public static function render(string $view): mixed
+    {
+        try
+        {
+            // split :: into array and extract the folder and files
+            $file = preg_replace('/(::)|::/', '/', $view);
+				$file = strtolower(trim($file, '\/\/'));
+            $view_path = '/views/' . $file;
 
-			// split :: into array and extract the folder and files
-			$file = preg_replace('/(::)|::/', '/', $view);
-			$view_path = '/views/' . $file;
+            $file_uri = Route::$root_dir . $view_path;
 
-			$file_uri = Route::$root_dir . $view_path;
+            if (is_file($file_uri . '.view.php') && !preg_match('/(..\/)/', $view))
+            {
+                $file_type = Route::file_type($file_uri . '.view.php');
+                header("Content-Type: $file_type");
 
-			if (is_file($file_uri . '.view.php') && !preg_match('/(..\/)/', $view))
-			{
-				$file_type = Route::file_type($file_uri . '.view.php');
-				header("Content-Type: $file_type; charset=$charset");
+                return self::slides_include($file_uri . '.view.php');
+            }
+            elseif (is_file($file_uri) && !preg_match('/(..\/)/', $view))
+            {
+                $file_type = Route::file_type($file_uri);
+                header("Content-Type: $file_type");
 
-				return self::slides_include($file_uri . '.view.php');
-			}
-			elseif (is_file($file_uri) && !preg_match('/(..\/)/', $view))
-			{
-				$file_type = Route::file_type($file_uri);
-				header("Content-Type: $file_type; charset=$charset");
-
-				return self::slides_include($file_uri);
-			}
-			else
-			{
-				throw new Exception("No view controller path found called `$view`");
-			}
-		}
-		catch ( Exception $e )
-		{
-			print $e->getMessage();
-			return 'null';
-		}
-	}
+                return self::slides_include($file_uri);
+            }
+            else
+            {
+                throw new Exception("No view controller path found called `$view`");
+            }
+        }
+        catch ( Exception $e )
+        {
+            print $e->getMessage();
+            return 'null';
+        }
+    }
 }
