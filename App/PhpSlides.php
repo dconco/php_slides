@@ -842,7 +842,7 @@ final class view extends Controller
      *   |   Render views and parse public URL in views
      *
      * @param string $view
-     * @return string return the file gotten from the view parameters
+     * @return mixed return the file gotten from the view parameters
      *
      *   --------------------------------------------------------------
      */
@@ -852,6 +852,7 @@ final class view extends Controller
         {
             // split :: into array and extract the folder and files
             $file = preg_replace('/(::)|::/', '/', $view);
+				$file = strtolower(trim($file, '\/\/'));
             $view_path = '/views/' . $file;
 
             $file_uri = Route::$root_dir . $view_path;
