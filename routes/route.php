@@ -20,7 +20,7 @@ Route::config();
  *  |  that are not coming from route, it redirects to 404
  *  --------------------------------------------------------------------
  */
-Route::view("/dashboard", "::Dashboard");
+Route::get("/dashboard", "::Dashboard")->name('dashboard');
 Route::redirect("/", "/dashboard");
 
 Route::any("*", view::render("::Errors::404"));

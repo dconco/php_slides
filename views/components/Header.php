@@ -7,7 +7,7 @@
 <link rel="icon" href="::view/assets/icons/icon.png" type="image/png" />
 
 <!-- CSS Links -->
-<link rel="stylesheet" type="text/css" href="::view/styles/App.css">
+<link rel="stylesheet" type="text/css" href="::view/styles/app.css">
 
 <!-- Internal Styling -->
 <style>

@@ -303,7 +303,7 @@ Let's navigates to the created file and write some codes in it.
     ?>
 ```
 
-In this example above, we created a file called `UserController.php` in the `/Controller` folder.
+In this example above, we created a file called `UserController.php` in the `/controller` folder.
 
 And we created a namespace for the class controller that'll be used in calling the class.
 We created the class called `UserController` and extends it to the `Controller` class,
