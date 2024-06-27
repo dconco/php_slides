@@ -16,8 +16,8 @@
     "license": "MIT",
     "autoload": {
         "files": [
-            "./app/Functions.php",
             "./configs/env.config.php",
+            "./app/Functions.php",
             "./configs/cors.php"
         ],
         "classmap": [ "*" ]
