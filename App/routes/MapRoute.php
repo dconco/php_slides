@@ -21,7 +21,7 @@ class MapRoute extends RouteController implements MapInstance
     * @param int $method
     * @param string|array $route
     */
-   public function match(string $method, string|array $route): bool
+   public function match(string $method, string|array $route): bool|array
    {
       $config_file = self::config_file();
       self::$charset = $config_file["charset"];
@@ -140,16 +140,23 @@ class MapRoute extends RouteController implements MapInstance
          }
 
          $charset = self::$charset;
-         header("Allow: $method; charset=$charset");
-         header("Content-Type: */*");
+
          http_response_code(200);
-         return true;
+         header("Allow: $method; charset=$charset");
+         self::log();
+
+         return [
+            "method" => $method,
+            "route" => self::$route,
+            "params_value" => $req_value,
+            "params" => $req,
+         ];
       }
 
       return false;
    }
 
-   private function match_routing(): bool
+   private function match_routing(): bool|array
    {
       $uri = [];
       $str_route = "";
@@ -165,7 +172,7 @@ class MapRoute extends RouteController implements MapInstance
 
       if (
          in_array(self::$request_uri, $uri) ||
-         trim(self::$request_uri) === trim($str_route)
+         self::$request_uri === $str_route
       ) {
          if (strtoupper($_SERVER["REQUEST_METHOD"]) !== self::$method) {
             http_response_code(405);
@@ -176,11 +183,14 @@ class MapRoute extends RouteController implements MapInstance
          $method = self::$method;
          $charset = self::$charset;
 
-         header("Allow: $method; charset=$charset");
-         header("Content-Type: */*");
          http_response_code(200);
+         header("Allow: $method; charset=$charset");
+         self::log();
 
-         return true;
+         return [
+            "method" => $method,
+            "route" => self::$route,
+         ];
       } else {
          return false;
       }

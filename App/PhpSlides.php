@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace PhpSlides;
 
+use Closure;
 use Exception;
 use PhpSlides\Controller\Controller;
 use PhpSlides\Instance\RouteInstance;
@@ -78,7 +79,11 @@ final class Route extends Controller implements RouteInstance
     */
    protected static string $route_name;
 
-   protected static MapRoute $map;
+   protected static array|bool $map_info;
+
+   protected static array $params_value;
+
+   protected static array $params;
 
    /**
     * Call all static methods
@@ -645,9 +650,9 @@ final class Route extends Controller implements RouteInstance
       $match = new MapRoute();
       $match = $match->match($method, $route);
 
-      if ($match) {
-         return new self();
-      }
+      self::$route_name = "";
+      self::$map_info = $match;
+      return new self();
    }
 
    /**
@@ -658,14 +663,63 @@ final class Route extends Controller implements RouteInstance
     */
    public function name(string $name): Route
    {
+      $file_dir = __DIR__ . "/resources/route.names.php";
+
       ob_start();
-      $route_file = include __DIR__ . DIRECTORY_SEPERATOR . "resources/route.names.php";
+      $route_file = include $file_dir;
       ob_end_clean();
-      
-      
+
+      $route = [
+         trim($name) => self::$map_info,
+      ];
+
+      if (is_string($route_file)) {
+         if (unserialize($route_file)) {
+            $route_file = unserialize($route_file);
+         } else {
+            $route_file = [];
+         }
+      } else {
+         $route_file = [];
+      }
+
+      $route_name_file = array_merge($route_file, $route);
+      $route_name_file = serialize($route_name_file);
+
+      file_put_contents($file_dir, "<?php\n\nreturn ('$route_name_file');");
 
       self::$route_name = $name;
-      exit(print_r($route_file));
+      return new self();
+   }
+
+   /**
+    * Action method
+    * In outputting information to the client area
+    *
+    * @param mixed $action
+    */
+   public function action(Closure|string $action): void
+   {
+      if (self::$map_info) {
+         if (array_key_exists("params", self::$map_info)) {
+            $GLOBALS["params"] = self::$map_info["params"];
+            $params_value = self::$map_info["params_value"];
+
+            if (is_callable($action)) {
+               $a = $action(...$params_value);
+               print_r($a);
+            } else {
+               print_r($action);
+            }
+         } else {
+            if (is_callable($action)) {
+               print_r($action());
+            } else {
+               print_r($action);
+            }
+         }
+         exit();
+      }
    }
 
    /**

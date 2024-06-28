@@ -2,6 +2,7 @@
 
 namespace PhpSlides\Instance;
 
+use Closure;
 use PhpSlides\Route;
 
 /**
@@ -94,6 +95,14 @@ interface RouteInstance
     * @param string $name
     */
    public function name(string $name): Route;
+
+   /**
+    * Action method
+    * In outputting information to the client area
+    *
+    * @param mixed $action
+    */
+   public function action(Closure|string $action): void;
 
    /**
     *   ---------------------------------------------------------------------------

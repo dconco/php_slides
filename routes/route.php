@@ -20,7 +20,11 @@ Route::config();
  *  |  that are not coming from route, it redirects to 404
  *  --------------------------------------------------------------------
  */
-Route::map(GET, "/home")->name('home');
+Route::map(GET, "/home")
+   ->name("home")
+   ->action(view::render("::Dashboard"));
+
+Route::map(GET, "/about")->action("");
 
 Route::view("/dashboard", "::Dashboard");
 Route::redirect("/", "/dashboard");

@@ -18,5 +18,5 @@ interface MapInstance
     * @param string $method
     * @param string|array $route
     */
-   public function match(string $method, string|array $route): bool;
+   public function match(string $method, string|array $route): bool|array;
 }
