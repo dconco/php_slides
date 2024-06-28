@@ -7,13 +7,13 @@ namespace PhpSlides\Controller;
  */
 final class UserController extends Controller
 {
-  public function __invoke()
-  {
-    return "Invoked & get all users successful.";
-  }
+   public function index()
+   {
+      return "Invoked & get all users successful.";
+   }
 
-  public function User(string $user_name)
-  {
-    return "Username = $user_name";
-  }
+   public function User(string $user_name)
+   {
+      return "Username = $user_name";
+   }
 }

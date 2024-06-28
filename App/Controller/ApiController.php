@@ -84,7 +84,7 @@ final class Api extends Controller
 
 			// Gets all constant int values wrapped in an array
 			ob_start();
-			$bin_const_types = include $dir . "/App/bin/const_types.php";
+			$bin_const_types = include $dir . "/app/bin/const_types.php";
 			ob_end_clean();
 
 			$bin_const_types = unserialize(hex2bin(($bin_const_types)));

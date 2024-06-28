@@ -1,8 +1,8 @@
 <?php
 
-namespace PhpSlides\Route;
+namespace PhpSlides\Instance;
 
-use PhpSlides\Controller\Controller;
+use PhpSlides\Route;
 
 /**
  *   -------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ use PhpSlides\Controller\Controller;
  *
  *   -------------------------------------------------------------------------------
  */
-interface RouteInstance extends Controller
+interface RouteInstance
 {
    /**
     *   ------------------------------------------------------
@@ -54,7 +54,7 @@ interface RouteInstance extends Controller
     *
     *   ---------------------------------------------------------------------------------------------------------
     */
-   public static function config(bool $request_log = true): void;
+   public static function config(bool $request_log = APP_DEBUG): void;
 
    /**
     *   ------------------------------------------------------------------------
@@ -76,6 +76,24 @@ interface RouteInstance extends Controller
       mixed $callback,
       string $method = "*"
    ): void;
+
+   /**
+    * MAP method
+    * Check out documentation for using Map method
+    *
+    * @link https://github.com/dconco/php_slides
+    * @param string $method
+    * @param string|array $route
+    */
+   public static function map(string $method, string|array $route): Route;
+
+   /**
+    * name METHOD
+    * Give a route a name for later use
+    *
+    * @param string $name
+    */
+   public function name(string $name): Route;
 
    /**
     *   ---------------------------------------------------------------------------

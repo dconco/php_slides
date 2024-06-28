@@ -12,6 +12,14 @@ use PhpSlides\Controller\RouteController;
  */
 function slides_include($filename)
 {
-    $output = RouteController::slides_include($filename);
-    return $output;
+   $output = RouteController::slides_include($filename);
+   return $output;
 }
+
+define("APP_DEBUG", getenv("APP_DEBUG", "true"));
+
+const GET = "GET";
+const PUT = "PUT";
+const POST = "POST";
+const PATCH = "PATCH";
+const DELETE = "DELETE";
