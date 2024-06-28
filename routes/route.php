@@ -20,6 +20,8 @@ Route::config();
  *  |  that are not coming from route, it redirects to 404
  *  --------------------------------------------------------------------
  */
+Route::map(GET, "/home");
+
 Route::view("/dashboard", "::Dashboard");
 Route::redirect("/", "/dashboard");
 
