@@ -20,11 +20,13 @@ Route::config();
  *  |  that are not coming from route, it redirects to 404
  *  --------------------------------------------------------------------
  */
-Route::map(GET, "/home/{user}")
-   ->name("home")
+Route::map(GET, "/users/{user}")
+   ->name("users.user")
    ->use("UserController::user");
 
-Route::map(GET, "/about")->action("");
+Route::middleware(["ShowMiddleware::show"], function () {
+Route::map(GET, "/about")->file("::Pages::About");
+});
 
 Route::view("/dashboard", "::Dashboard");
 Route::redirect("/", "/dashboard");
