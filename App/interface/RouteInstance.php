@@ -105,6 +105,15 @@ interface RouteInstance
    public function action(Closure|string $action): void;
 
    /**
+    * Controller method
+    * Work with map controller route
+    *
+    * @params string $controller
+    * @return void
+    */
+   public function use(string $controller): void;
+
+   /**
     * view method
     * return view file directly
     *

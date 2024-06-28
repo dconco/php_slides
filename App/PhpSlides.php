@@ -711,15 +711,55 @@ final class Route extends Controller implements RouteInstance
             if (is_callable($action)) {
                $a = $action(...$params_value);
                print_r($a);
+            } elseif (preg_match("/(?=.*Controller)(?=.*::)/", $action)) {
+               $this->use($action);
             } else {
                print_r($action);
             }
          } else {
             if (is_callable($action)) {
                print_r($action());
+            } elseif (preg_match("/(?=.*Controller)(?=.*::)/", $action)) {
+               $this->use($action);
             } else {
                print_r($action);
             }
+         }
+         exit();
+      }
+   }
+
+   /**
+    * Controller method
+    * Work with map controller route
+    *
+    * @params string $controller
+    * @return void
+    */
+   public function use(string $controller): void
+   {
+      if (self::$map_info) {
+         if (!preg_match("/(?=.*Controller)(?=.*::)/", $controller)) {
+            exit('invalid parameter $controller Controller type');
+         }
+
+         list($c_name, $c_method) = explode("::", $controller);
+
+         $cc = "PhpSlides\\Controller\\" . $c_name;
+
+         if (class_exists($cc)) {
+            if (array_key_exists("params", self::$map_info)) {
+               $GLOBALS["params"] = self::$map_info["params"];
+               $params_value = self::$map_info["params_value"];
+
+               $cc = new $cc();
+               print_r($cc->$c_method(...$params_value));
+            } else {
+               $cc = new $cc();
+               print_r($cc->$c_method());
+            }
+         } else {
+            echo "No class controller found as: `$cc`";
          }
          exit();
       }
@@ -738,7 +778,8 @@ final class Route extends Controller implements RouteInstance
             $GLOBALS["params"] = self::$map_info["params"];
          }
 
-         exit(view::render($file));
+         print_r(view::render($file));
+         exit();
       }
    }
 

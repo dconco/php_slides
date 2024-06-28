@@ -180,7 +180,7 @@ class RouteController
       $http_protocol = $_SERVER["SERVER_PROTOCOL"];
 
       // all content messages to log
-      $content = "$method\t $http_protocol\t $http_code\t $uri\t $date\n";
+      $content = "$method  $http_protocol  $http_code  $uri  $date\n";
 
       if (Route::$log === true) {
          $log = fopen($log_path, "a");
