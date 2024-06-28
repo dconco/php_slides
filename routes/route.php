@@ -22,7 +22,7 @@ Route::config();
  */
 Route::map(GET, "/home")
    ->name("home")
-   ->action(view::render("::Dashboard"));
+   ->file("::Dashboard");
 
 Route::map(GET, "/about")->action("");
 

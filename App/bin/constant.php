@@ -18,5 +18,5 @@
 })();
 
 define('SLIDES_VERSION', '1.2.1');
-define('POST_INVOKE', 8547728077);
-define('POST', 5644462796);
+define('POST_INVOKE', 2636829725);
+define('POST', 2349494580);

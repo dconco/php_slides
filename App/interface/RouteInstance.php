@@ -105,6 +105,14 @@ interface RouteInstance
    public function action(Closure|string $action): void;
 
    /**
+    * view method
+    * return view file directly
+    *
+    * @param string $file
+    */
+   public function file(string $file): void;
+
+   /**
     *   ---------------------------------------------------------------------------
     *
     *   |   VIEW ROUTE METHOD

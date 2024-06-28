@@ -200,6 +200,9 @@ final class Route extends Controller implements RouteInstance
    public static function config(bool $request_log = APP_DEBUG): void
    {
       try {
+         $method = $_SERVER["REQUEST_METHOD"];
+         header("Accept: $method");
+
          self::$log = $request_log;
          self::$root_dir = htmlspecialchars(dirname(getcwd()));
          self::$request_uri = htmlspecialchars($_REQUEST["uri"]);
@@ -251,7 +254,7 @@ final class Route extends Controller implements RouteInstance
                       *   -----------------------------------------------
                       */ else {
                         http_response_code(200);
-                        header("Content-Type: $file_type");
+                        header("Content-Type: $file_type; charset=$charset");
 
                         print_r($file);
                         self::log();
@@ -283,7 +286,7 @@ final class Route extends Controller implements RouteInstance
                       *  -----------------------------------------------
                       */ else {
                         http_response_code(200);
-                        header("Content-Type: $file_type");
+                        header("Content-Type: $file_type; charset=$charset");
 
                         print_r($file);
                         self::log();
@@ -329,7 +332,7 @@ final class Route extends Controller implements RouteInstance
                         preg_match("/(audio\/*)/", $req_ext))
                   ) {
                      http_response_code(200);
-                     header("Content-Type: $file_type");
+                     header("Content-Type: $file_type; charset=$charset");
 
                      print_r($file);
                      self::log();
@@ -719,6 +722,23 @@ final class Route extends Controller implements RouteInstance
             }
          }
          exit();
+      }
+   }
+
+   /**
+    * file method
+    * return view file directly
+    *
+    * @param string $file
+    */
+   public function file(string $file): void
+   {
+      if (self::$map_info) {
+         if (array_key_exists("params", self::$map_info)) {
+            $GLOBALS["params"] = self::$map_info["params"];
+         }
+
+         exit(view::render($file));
       }
    }
 

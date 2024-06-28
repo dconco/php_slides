@@ -142,7 +142,7 @@ class MapRoute extends RouteController implements MapInstance
          $charset = self::$charset;
 
          http_response_code(200);
-         header("Allow: $method; charset=$charset");
+         header("Content-Type: */*; charset=$charset");
          self::log();
 
          return [
@@ -184,7 +184,7 @@ class MapRoute extends RouteController implements MapInstance
          $charset = self::$charset;
 
          http_response_code(200);
-         header("Allow: $method; charset=$charset");
+         header("Content-Type: */*; charset=$charset");
          self::log();
 
          return [

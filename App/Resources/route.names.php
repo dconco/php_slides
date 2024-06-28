@@ -1,3 +1,3 @@
 <?php
 
-return ('a:2:{s:4:"home";a:2:{s:6:"method";s:3:"GET";s:5:"route";s:4:"home";}s:5:"about";a:2:{s:6:"method";s:3:"GET";s:5:"route";s:5:"about";}}');
+return ('a:2:{s:4:"home";a:4:{s:6:"method";s:3:"GET";s:5:"route";s:11:"home/{name}";s:12:"params_value";a:1:{i:0;s:4:"dave";}s:6:"params";a:1:{s:4:"name";s:4:"dave";}}s:5:"about";a:2:{s:6:"method";s:3:"GET";s:5:"route";s:5:"about";}}');
