@@ -71,19 +71,15 @@ final class Route extends Controller implements RouteInstance
     */
    public static string $request_uri;
 
-   /**
-    * Get current Route name
-    *
-    * @var string $route_name
-    * @return string
-    */
-   protected static string $route_name;
-
    protected static array|bool $map_info;
 
    protected static array $params_value;
 
    protected static array $params;
+
+   protected static array $routes;
+
+   protected static array $route;
 
    /**
     * Call all static methods
@@ -220,6 +216,9 @@ final class Route extends Controller implements RouteInstance
          $config_file = self::config_file();
 
          $charset = $config_file["charset"];
+
+         $route_file = __DIR__ . "/resources/route.names.php";
+         file_put_contents($route_file, "");
 
          /**
           *   ----------------------------------------------
@@ -650,11 +649,13 @@ final class Route extends Controller implements RouteInstance
     */
    public static function map(string $method, string|array $route): Route
    {
-      $match = new MapRoute();
+      /* $match = new MapRoute();
       $match = $match->match($method, $route);
 
       self::$route_name = "";
-      self::$map_info = $match;
+      self::$map_info = $match;*/
+
+      self::$route[] = $route;
       return new self();
    }
 
@@ -666,32 +667,14 @@ final class Route extends Controller implements RouteInstance
     */
    public function name(string $name): Route
    {
-      $file_dir = __DIR__ . "/resources/route.names.php";
-
-      ob_start();
-      $route_file = include $file_dir;
-      ob_end_clean();
-
-      $route = [
+      /* $route = [
          trim($name) => self::$map_info,
       ];
+*/
 
-      if (is_string($route_file)) {
-         if (unserialize($route_file)) {
-            $route_file = unserialize($route_file);
-         } else {
-            $route_file = [];
-         }
-      } else {
-         $route_file = [];
-      }
+      add_route_name($name, end(self::$route));
+      self::$routes[$name] = end(self::$route);
 
-      $route_name_file = array_merge($route_file, $route);
-      $route_name_file = serialize($route_name_file);
-
-      file_put_contents($file_dir, "<?php\n\nreturn ('$route_name_file');");
-
-      self::$route_name = $name;
       return new self();
    }
 
