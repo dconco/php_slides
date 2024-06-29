@@ -16,8 +16,11 @@ declare(strict_types=1);
 
 namespace PhpSlides;
 
+use Closure;
 use Exception;
+use PhpSlides\Route\MapRoute;
 use PhpSlides\Controller\Controller;
+use PhpSlides\Instance\RouteInstance;
 
 
 
@@ -40,9 +43,8 @@ use PhpSlides\Controller\Controller;
  *   -------------------------------------------------------------------------------
  */
 
-final class Route extends Controller
+final class Route extends Controller implements RouteInstance
 {
-
 	/**
 	 *  `$log` method prints logs in `.log` file in the root of the project each time any request has been received, when setted to true.
 	 *   It's been setted to true by default, can be changed anytime.
@@ -55,7 +57,7 @@ final class Route extends Controller
 
 	/**
 	 *   Gets the full location of project root directory
-	 * 
+	 *
 	 *   @static $root_dir
 	 *   @var string $root_dir
 	 *   @return string Location directory of project with `__DIR__`
@@ -64,12 +66,40 @@ final class Route extends Controller
 
 	/**
 	 * Get's all full request URL
-	 * 
+	 *
 	 * @static $root_dir
 	 * @var string $root_dir
 	 * @return string
 	 */
 	public static string $request_uri;
+
+	protected static array|bool $map_info;
+
+	protected static array $params_value;
+
+	protected static array $params;
+
+	protected static array $routes;
+
+	protected static array $route;
+
+
+	/**
+	 * Call all static methods
+	 * and initialize them
+	 */
+	public static function __callStatic ($method, $args)
+	{
+		//
+	}
+
+	/**
+	 * Call all methods and initialize them
+	 */
+	public function __call ($method, $args)
+	{
+		//
+	}
 
 
 
@@ -83,14 +113,14 @@ final class Route extends Controller
 	 *   |
 	 *   ------------------------------------------------------
 	 */
-	public static function file_type(string $filename): bool|string
+	public static function file_type (string $filename): bool|string
 	{
 		if (is_file($filename))
 		{
-			if (!extension_loaded('fileinfo'))
+			if (!extension_loaded("fileinfo"))
 			{
 				throw new Exception(
-				  'Fileinfo extension is not enabled. Please enable it in your php.ini configuration.',
+				 "Fileinfo extension is not enabled. Please enable it in your php.ini configuration."
 				);
 			}
 
@@ -98,47 +128,50 @@ final class Route extends Controller
 			$file_type = finfo_file($file_info, $filename);
 			finfo_close($file_info);
 
-			$file_ext = explode('.', $filename);
+			$file_ext = explode(".", $filename);
 			$file_ext = strtolower(end($file_ext));
 
-			if ($file_type === 'text/plain' || $file_type === 'application/octet-stream')
+			if (
+			$file_type === "text/plain" ||
+			$file_type === "application/octet-stream"
+			)
 			{
 				switch ($file_ext)
 				{
-					case 'css':
-						return 'text/css';
-					case 'csv':
-						return 'text/csv';
-					case 'htm':
-						return 'text/htm';
-					case 'html':
-						return 'text/html';
-					case 'js':
-						return 'application/javascript';
-					case 'pdf':
-						return 'application/pdf';
-					case 'doc':
-						return 'application/msword';
-					case 'docx':
-						return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-					case 'xls':
-						return 'application/vnd.ms-excel';
-					case 'xlsx':
-						return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-					case 'json':
-						return 'application/json';
-					case 'md':
-						return 'text/markdown';
-					case 'ppt':
-						return 'application/mspowerpoint';
-					case 'pptx':
-						return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
-					case 'swf':
-						return 'application/x-shockwave-flash';
-					case 'ai':
-						return 'application/postscript';
-					case 'odt':
-						return 'application/vnd.oasis.opendocument.text';
+					case "css":
+						return "text/css";
+					case "csv":
+						return "text/csv";
+					case "htm":
+						return "text/htm";
+					case "html":
+						return "text/html";
+					case "js":
+						return "application/javascript";
+					case "pdf":
+						return "application/pdf";
+					case "doc":
+						return "application/msword";
+					case "docx":
+						return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+					case "xls":
+						return "application/vnd.ms-excel";
+					case "xlsx":
+						return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+					case "json":
+						return "application/json";
+					case "md":
+						return "text/markdown";
+					case "ppt":
+						return "application/mspowerpoint";
+					case "pptx":
+						return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+					case "swf":
+						return "application/x-shockwave-flash";
+					case "ai":
+						return "application/postscript";
+					case "odt":
+						return "application/vnd.oasis.opendocument.text";
 
 					default:
 						return $file_type;
@@ -157,50 +190,51 @@ final class Route extends Controller
 
 
 
-
 	/**
 	 *   ---------------------------------------------------------------------------------------------------------
 	 *
 	 *   |   If `$request_log` is set to true, it prints logs in `.log` file in the root of the project each time any request has been received.
 	 *   |   It's been setted to true by default
 	 *
+	 *
 	 *   |   This function handles getting files request and describe the type of request to handle according to `phpslides.config.json` file in the root of the project,
 	 *   |   for more security, it disallow users in navigating to wrong paths or files of the project.
 	 *
+	 *
 	 *   |   This config method must be called before writing any other Route method or codes.
+	 *   |
 	 *
 	 *   @param bool $request_log The parameter indicates request logger to prints out logs output on each received request
 	 *
 	 *   ---------------------------------------------------------------------------------------------------------
 	 */
-	public static function config(bool $request_log = true)
+	public static function config (bool $request_log = APP_DEBUG): void
 	{
 		try
 		{
+			$method = $_SERVER["REQUEST_METHOD"];
+			header("Accept: $method");
+
 			self::$log = $request_log;
 			self::$root_dir = htmlspecialchars(dirname(getcwd()));
-			self::$request_uri = htmlspecialchars($_REQUEST['uri']);
+			self::$request_uri = htmlspecialchars($_REQUEST["uri"]);
 
 			$dir = self::$root_dir;
-			$req = preg_replace("/(^\/)|(\/$)/", '', self::$request_uri);
-			$url = explode('/', $req);
+			$req = preg_replace("/(^\/)|(\/$)/", "", self::$request_uri);
+			$url = explode("/", $req);
 
-			$req_ext = explode('.', end($url));
+			$req_ext = explode(".", end($url));
 			$req_ext = strtolower(end($req_ext));
 
-			$file = self::slides_include($dir . '/public/' . $req);
-			$file_type = $file ? self::file_type($dir . '/public/' . $req) : null;
+			$file = self::slides_include($dir . "/public/" . $req);
+			$file_type = $file ? self::file_type($dir . "/public/" . $req) : null;
 
-			/**
-			 *	Retrieves the charset from the configuration file.
-			 * 
-			 *	The above code is retrieving the value of the 'charset' key from the 'config_file' array.
-			 * The 'config_file' array is obtained using the 'config_file' method of the current class.
-			 *
-			 * @return string The charset value.
-			 */
 			$config_file = self::config_file();
-			$charset = $config_file['charset'];
+
+			$charset = $config_file["charset"];
+
+			$route_file = __DIR__ . "/resources/route.names.php";
+			file_put_contents($route_file, "");
 
 			/**
 			 *   ----------------------------------------------
@@ -209,13 +243,12 @@ final class Route extends Controller
 			 */
 			if (!empty($config_file) && $file_type != null)
 			{
-				$config = $config_file['public'];
+				$config = $config_file["public"];
 				$accept = true;
 
 				// loop over the requested URL folders
 				foreach ($url as $index => $value)
 				{
-
 					/**
 					 *   -----------------------------------------------
 					 *   |   Checks if array key from URL exists in the config file
@@ -235,12 +268,11 @@ final class Route extends Controller
 							if (array_key_exists($url[$index + 1], $config))
 							{
 								continue;
-							}
-							/**
-							 *   -----------------------------------------------
-							 *   |   Performs the logic for accepting current file
-							 *   -----------------------------------------------
-							 */
+							} /**
+							  *   -----------------------------------------------
+							  *   |   Performs the logic for accepting current file
+							  *   -----------------------------------------------
+							  */
 							else
 							{
 								http_response_code(200);
@@ -251,35 +283,33 @@ final class Route extends Controller
 
 								exit();
 							}
-						}
-						/**
-						 *   -----------------------------------------------------------
-						 *   |   Checks if * or image exists in the config file of the $value
-						 *   |   Then it accept all types of files or all types of image in the childrens folder
-						 *   -----------------------------------------------------------
-						 */
+						} /**
+						  *   -----------------------------------------------------------
+						  *   |   Checks if * or image exists in the config file of the $value
+						  *   |   Then it accept all types of files or all types of image in the childrens folder
+						  *   -----------------------------------------------------------
+						  */
 						elseif (
-						in_array('*', $config[$value]) ||
-						(in_array('image', $config[$value]) &&
-						preg_match('/(image\/*)/', $file_type)) ||
-						(in_array('video', $config[$value]) &&
-						preg_match('/(video\/*)/', $file_type)) ||
-						(in_array('audio', $config[$value]) &&
-						preg_match('/(audio\/*)/', $file_type) &&
+						in_array("*", $config[$value]) ||
+						(in_array("image", $config[$value]) &&
+						preg_match("/(image\/*)/", $file_type)) ||
+						(in_array("video", $config[$value]) &&
+						preg_match("/(video\/*)/", $file_type)) ||
+						(in_array("audio", $config[$value]) &&
+						preg_match("/(audio\/*)/", $file_type) &&
 						$accept != false)
 						)
 						{
-							$accept = '*';
+							$accept = "*";
 
 							if (array_key_exists($url[$index + 1], $config))
 							{
 								continue;
-							}
-							/**
-							 *  -----------------------------------------------
-							 *  |     Performs the logic for accepting current file
-							 *  -----------------------------------------------
-							 */
+							} /**
+							  *  -----------------------------------------------
+							  *  |     Performs the logic for accepting current file
+							  *  -----------------------------------------------
+							  */
 							else
 							{
 								http_response_code(200);
@@ -304,14 +334,14 @@ final class Route extends Controller
 				 *   ------------------------------------------------------------------------
 				 */
 				if (
-				array_key_exists('/', $config) &&
+				array_key_exists("/", $config) &&
 				count($url) === 1 &&
-				is_file($dir . '/public/' . $url[0])
+				is_file($dir . "/public/" . $url[0])
 				)
 				{
-					$req_ext = explode('.', $url[0]);
+					$req_ext = explode(".", $url[0]);
 					$req_ext = strtolower(end($req_ext));
-					$root = $config['/'];
+					$root = $config["/"];
 
 					/**
 					 *   ---------------------------------------------------------------------------------------------
@@ -324,10 +354,13 @@ final class Route extends Controller
 
 						if (
 						$root1 === $req_ext ||
-						$root1 === '*' ||
-						($root1 === 'image' && preg_match('/(image\/*)/', $req_ext)) ||
-						($root1 === 'video' && preg_match('/(video\/*)/', $req_ext)) ||
-						($root1 === 'audio' && preg_match('/(audio\/*)/', $req_ext))
+						$root1 === "*" ||
+						($root1 === "image" &&
+						preg_match("/(image\/*)/", $req_ext)) ||
+						($root1 === "video" &&
+						preg_match("/(video\/*)/", $req_ext)) ||
+						($root1 === "audio" &&
+						preg_match("/(audio\/*)/", $req_ext))
 						)
 						{
 							http_response_code(200);
@@ -341,29 +374,44 @@ final class Route extends Controller
 				}
 			}
 
-
 			/**
 			 *   ----------------------------------------------
 			 *   | Generates Bin files
 			 *   ----------------------------------------------
 			 */
 			$gen_codes1 = "<?php\n\n";
-			$gen_codes2 = "/**\n *   ----------------------------------------------------------------------------------------------------------------\n";
-			$gen_codes3 = " *   |  This codes in bin directory are generated by PhpSlides.\n";
-			$gen_codes4 = " *   |  They're regenerated on every page renderings or APIs.\n *   |  And every request received.\n";
-			$gen_codes5 = " *   |  Used in making APIs ready for developers to be able to deal with.\n *   |  So accordingly to slides protection from handling files, and other slides inbuilt function,\n";
-			$gen_codes6 = " *   |  It's not adviceable or recommended in deleting or changing some files in this bin directory or any other generated folder from slides project,\n";
-			$gen_codes7 = " *   |  to prevent occured errors in file handling, compatibility in security based web performance.\n";
-			$gen_codes8 = " *   ----------------------------------------------------------------------------------------------------------------\n */\n\n";
+			$gen_codes2 =
+			 "/**\n *   ----------------------------------------------------------------------------------------------------------------\n";
+			$gen_codes3 =
+			 " *   |  This codes in bin directory are generated by PhpSlides.\n";
+			$gen_codes4 =
+			 " *   |  They're regenerated on every page renderings or APIs.\n *   |  And every request received.\n";
+			$gen_codes5 =
+			 " *   |  Used in making APIs ready for developers to be able to deal with.\n *   |  So accordingly to slides protection from handling files, and other slides inbuilt function,\n";
+			$gen_codes6 =
+			 " *   |  It's not adviceable or recommended in deleting or changing some files in this bin directory or any other generated folder from slides project,\n";
+			$gen_codes7 =
+			 " *   |  to prevent occured errors in file handling, compatibility in security based web performance.\n";
+			$gen_codes8 =
+			 " *   ----------------------------------------------------------------------------------------------------------------\n */\n\n";
 			$gen_codes9 = "(function ()\n{\n\t@'generated pages';\n})();";
 
-			$concatted = $gen_codes1 . $gen_codes2 . $gen_codes3 . $gen_codes4 . $gen_codes5 . $gen_codes6 . $gen_codes7 . $gen_codes8;
+			$concatted =
+			 $gen_codes1 .
+			 $gen_codes2 .
+			 $gen_codes3 .
+			 $gen_codes4 .
+			 $gen_codes5 .
+			 $gen_codes6 .
+			 $gen_codes7 .
+			 $gen_codes8;
 
-
-			!is_dir($dir . '/App/bin') && mkdir($dir . '/App/bin');
-			file_put_contents($dir . '/App/bin/BLOBS.php', "<?php\n\n$gen_codes9");
-			file_put_contents($dir . '/App/bin/README.php', $concatted . $gen_codes9);
-
+			!is_dir($dir . "/App/bin") && mkdir($dir . "/App/bin");
+			file_put_contents($dir . "/App/bin/BLOBS.php", "<?php\n\n$gen_codes9");
+			file_put_contents(
+			 $dir . "/App/bin/README.php",
+			 $concatted . $gen_codes9
+			);
 
 			/**
 			 *   ----------------------------------------------
@@ -371,10 +419,13 @@ final class Route extends Controller
 			 *   ----------------------------------------------
 			 */
 			ob_start();
-			$web_file = include $dir . '/src/web.php';
+			$web_file = include_once $dir . "/src/web.php";
 			ob_end_clean();
 
-			$data = $concatted . $gen_codes9 . "\n\ndefine('SLIDES_VERSION', '1.2.1');\n";
+			$data =
+			 $concatted .
+			 $gen_codes9 .
+			 "\n\ndefine('SLIDES_VERSION', '1.2.1');\n";
 
 			$arr_num = [];
 			$arr_const_types = [];
@@ -385,13 +436,13 @@ final class Route extends Controller
 			// Generate random array number key to store in bin const_types
 			for ($i = 0; $i < count($web_file); $i++)
 			{
-				$rand = rand(0, 999);
+				$rand = rand(1111111111, 9999999999);
 				$key_capitalized = strtoupper($arr_keys[$i]);
 				$data .= "define('$key_capitalized', $rand);\n";
 
 				if (in_array($rand, $arr_num))
 				{
-					$rand = rand(0, 9999);
+					$rand = rand(1111111111, 9999999999);
 					array_push($arr_num, $rand);
 					$arr_const_types[$rand] = $arr_vals[$i];
 				}
@@ -403,15 +454,22 @@ final class Route extends Controller
 			}
 
 			// Add the const_types information to the file
-			$const_types_data = $concatted . "return ('" . bin2hex(serialize($arr_const_types)) . "');";
-			file_put_contents($dir . '/App/bin/const_types.php', $const_types_data);
+			$const_types_data =
+			 $concatted .
+			 "return ('" .
+			 bin2hex(serialize($arr_const_types)) .
+			 "');";
+			file_put_contents(
+			 $dir . "/App/bin/const_types.php",
+			 $const_types_data
+			);
 
 			// Add the defined constants data to the bin file
-			file_put_contents($dir . '/App/bin/constant.php', $data);
+			file_put_contents($dir . "/App/bin/constant.php", $data);
 
 			// Gets the api.php file contents
-			include_once $dir . '/App/bin/constant.php';
-			include_once $dir . '/routes/api.php';
+			include_once $dir . "/App/bin/constant.php";
+			include_once $dir . "/routes/api.php";
 
 			$request_log == true ? (self::$log = true) : (self::$log = false);
 		}
@@ -421,6 +479,7 @@ final class Route extends Controller
 			exit();
 		}
 	}
+
 
 
 	/**
@@ -438,20 +497,11 @@ final class Route extends Controller
 	 *
 	 *   ------------------------------------------------------------------------
 	 */
-	public static function any(array|string $route, mixed $callback, string $method = '*')
-	{
-
-		/**
-		 *	Retrieves the charset from the configuration file.
-		 * 
-		 *	The above code is retrieving the value of the 'charset' key from the 'config_file' array.
-		 * The 'config_file' array is obtained using the 'config_file' method of the current class.
-		 *
-		 * @return string The charset value.
-		 */
-		$config_file = self::config_file();
-		$charset = $config_file['charset'];
-
+	public static function any (
+	 array|string $route,
+	 mixed $callback,
+	 string $method = "*",
+	): void {
 		/**
 		 *   --------------------------------------------------------------
 		 *
@@ -460,36 +510,17 @@ final class Route extends Controller
 		 *   |   This * route serves as 404, which executes whenever there're no matching routes from the request url
 		 *   |   which takes a callback parameter that is rendered to the webpage
 		 *
-		 *	  --------------------------------------------------------------
+		 * --------------------------------------------------------------
 		 */
-		if ((is_array($route) && in_array('*', $route)) || $route === '*')
+
+		if ((is_array($route) && in_array("*", $route)) || $route === "*")
 		{
-			header('HTTP/1.0 404 Not Found');
-			header("Content-Type: */*; charset=$charset", true, 404);
+			header("HTTP/1.0 404 Not Found");
+			header("Content-Type: */*");
 
 			print_r(is_callable($callback) ? $callback() : $callback);
 			self::log();
 			exit();
-		}
-
-		/**
-		 * Sets the HTTP header "Allow" with the specified method.
-		 *
-		 * @param string $method The HTTP method to be set.
-		 * @return void
-		 */
-		$method = strtoupper($method);
-		header("Allow: $method; charset=$charset");
-
-		/**
-		 * Throws an exception if the method is 'UPDATE'.
-		 *
-		 * @param string $method The HTTP method.
-		 * @throws Exception If the method is 'UPDATE'.
-		 */
-		if ($method === 'UPDATE')
-		{
-			throw new Exception('Invalid use of deprecated method. Method `UPDATE` has been deprecated since version 1.2.1. Use `PUT` instead.');
 		}
 
 		// will store all the parameters value in this array
@@ -502,13 +533,12 @@ final class Route extends Controller
 		// finding if there is any {?} parameter in $route
 		if (is_string($route))
 		{
-			preg_match_all('/(?<={).+?(?=})/', $route, $paramMatches);
+			preg_match_all("/(?<={).+?(?=})/", $route, $paramMatches);
 		}
 
 		// if the route does not contain any param call routing();
 		if (empty($paramMatches[0]) || is_array($route))
 		{
-
 			/**
 			 *   ------------------------------------------------------
 			 *   |   Check if $callback is a callable function
@@ -522,15 +552,15 @@ final class Route extends Controller
 			{
 				if (
 				is_array($callback) &&
-				(preg_match('/(Controller)/', $callback[0], $matches) &&
+				(preg_match("/(Controller)/", $callback[0], $matches) &&
 				count($matches) > 1)
 				)
 				{
 					print_r(
-					  self::controller(
+					 self::controller(
 					  $callback[0],
-					  count($callback) > 1 ? $callback[1] : '',
-					  ),
+					  count($callback) > 1 ? $callback[1] : ""
+					 )
 					);
 				}
 				else
@@ -562,16 +592,16 @@ final class Route extends Controller
 
 		if (!empty(self::$request_uri))
 		{
-			$route = preg_replace("/(^\/)|(\/$)/", '', $route);
-			$reqUri = preg_replace("/(^\/)|(\/$)/", '', self::$request_uri);
+			$route = preg_replace("/(^\/)|(\/$)/", "", $route);
+			$reqUri = preg_replace("/(^\/)|(\/$)/", "", self::$request_uri);
 		}
 		else
 		{
-			$reqUri = '/';
+			$reqUri = "/";
 		}
 
 		// exploding route address
-		$uri = explode('/', $route);
+		$uri = explode("/", $route);
 
 		// will store index number where {?} parameter is required in the $route
 		$indexNum = [];
@@ -579,7 +609,7 @@ final class Route extends Controller
 		// storing index number, where {?} parameter is required with the help of regex
 		foreach ($uri as $index => $param)
 		{
-			if (preg_match('/{.*}/', $param))
+			if (preg_match("/{.*}/", $param))
 			{
 				$indexNum[] = $index;
 			}
@@ -590,7 +620,7 @@ final class Route extends Controller
 		 *   |   Exploding request uri string to array to get the exact index number value of parameter from $_REQUEST['uri']
 		 *   ----------------------------------------------------------------------------------
 		 */
-		$reqUri = explode('/', $reqUri);
+		$reqUri = explode("/", $reqUri);
 
 		/**
 		 *   ----------------------------------------------------------------------------------
@@ -615,11 +645,11 @@ final class Route extends Controller
 			$req_value[] = htmlspecialchars($reqUri[$index]);
 
 			// this is to create a regex for comparing route address
-			$reqUri[$index] = '{.*}';
+			$reqUri[$index] = "{.*}";
 		}
 
 		// converting array to string
-		$reqUri = implode('/', $reqUri);
+		$reqUri = implode("/", $reqUri);
 
 		/**
 		 *   -----------------------------------
@@ -627,45 +657,200 @@ final class Route extends Controller
 		 *   |   regex to match route is ready!
 		 *   -----------------------------------
 		 */
-		$reqUri = str_replace('/', '\\/', $reqUri);
+		$reqUri = str_replace("/", "\\/", $reqUri);
 
 		// now matching route with regex
 		if (preg_match("/$reqUri/", $route))
 		{
 			// checks if the requested method is of the given route
 			if (
-			strtoupper($_SERVER['REQUEST_METHOD']) !== $method &&
-			$method !== '*'
+			strtoupper($_SERVER["REQUEST_METHOD"]) !== strtoupper($method) &&
+			$method !== "*"
 			)
 			{
 				http_response_code(405);
 				self::log();
-				exit('Method Not Allowed');
+				exit("Method Not Allowed");
 			}
 
 			http_response_code(200);
-			header('Content-Type: */*');
+			header("Content-Type: */*");
 
 			if (
 			is_array($callback) &&
-			(preg_match('/(Controller)/', $callback[0], $matches) &&
+			(preg_match("/(Controller)/", $callback[0], $matches) &&
 			count($matches) > 1)
 			)
 			{
 				print_r(
-				  self::controller(
+				 self::controller(
 				  $callback[0],
-				  count($callback) > 1 ? $callback[1] : '',
-				  $req_value,
-				  ),
+				  count($callback) > 1 ? $callback[1] : "",
+				  $req_value
+				 )
 				);
 			}
 			else
 			{
-				print_r(is_callable($callback) ? $callback(...$req_value) : $callback);
+				print_r(
+				 is_callable($callback) ? $callback(...$req_value) : $callback
+				);
 			}
 
 			self::log();
+			exit();
+		}
+	}
+
+
+
+	/**
+	 * MAP method
+	 * Check out documentation for using Map method
+	 *
+	 * @link https://github.com/dconco/php_slides
+	 * @param string $method
+	 * @param string|array $route
+	 */
+	public static function map (string $method, string|array $route): Route
+	{
+		$match = new MapRoute();
+		self::$map_info = $match->match($method, $route);
+		self::$route[] = $route;
+
+		return new self();
+	}
+
+
+
+	/**
+	 * name METHOD
+	 * Give a route a name for later use
+	 *
+	 * @param string $name
+	 */
+	public function name (string $name): Route
+	{
+		add_route_name($name, end(self::$route));
+		self::$routes[$name] = end(self::$route);
+
+		return new self();
+	}
+
+
+
+	/**
+	 * Action method
+	 * In outputting information to the client area
+	 *
+	 * @param mixed $action
+	 */
+	public function action (Closure|string $action): void
+	{
+		if (self::$map_info)
+		{
+			if (array_key_exists("params", self::$map_info))
+			{
+				$GLOBALS["params"] = self::$map_info["params"];
+				$params_value = self::$map_info["params_value"];
+
+				if (is_callable($action))
+				{
+					$a = $action(...$params_value);
+					print_r($a);
+				}
+				elseif (preg_match("/(?=.*Controller)(?=.*::)/", $action))
+				{
+					$this->use($action);
+				}
+				else
+				{
+					print_r($action);
+				}
+			}
+			else
+			{
+				if (is_callable($action))
+				{
+					print_r($action());
+				}
+				elseif (preg_match("/(?=.*Controller)(?=.*::)/", $action))
+				{
+					$this->use($action);
+				}
+				else
+				{
+					print_r($action);
+				}
+			}
+			exit();
+		}
+	}
+
+
+
+	/**
+	 * Controller method
+	 * Work with map controller route
+	 *
+	 * @param string $controller
+	 * @return void
+	 */
+	public function use(string $controller): void
+	{
+		if (self::$map_info)
+		{
+			if (!preg_match("/(?=.*Controller)(?=.*::)/", $controller))
+			{
+				exit('invalid parameter $controller Controller type');
+			}
+
+			list( $c_name, $c_method ) = explode("::", $controller);
+
+			$cc = "PhpSlides\\Controller\\" . $c_name;
+
+			if (class_exists($cc))
+			{
+				if (array_key_exists("params", self::$map_info))
+				{
+					$GLOBALS["params"] = self::$map_info["params"];
+					$params_value = self::$map_info["params_value"];
+
+					$cc = new $cc();
+					print_r($cc->$c_method(...$params_value));
+				}
+				else
+				{
+					$cc = new $cc();
+					print_r($cc->$c_method());
+				}
+			}
+			else
+			{
+				echo "No class controller found as: `$cc`";
+			}
+			exit();
+		}
+	}
+
+
+
+	/**
+	 * file method
+	 * return view file directly
+	 *
+	 * @param string $file
+	 */
+	public function file (string $file): void
+	{
+		if (self::$map_info)
+		{
+			if (array_key_exists("params", self::$map_info))
+			{
+				$GLOBALS["params"] = self::$map_info["params"];
+			}
+
+			print_r(view::render($file));
 			exit();
 		}
 	}
@@ -687,9 +872,8 @@ final class Route extends Controller
 	 *
 	 *   ---------------------------------------------------------------------------
 	 */
-	public static function view(array|string $route, string $view)
+	public static function view (array|string $route, string $view): void
 	{
-
 		/**
 		 *   ----------------------------------------
 		 *   |   Replacing first and last forward slashes
@@ -698,35 +882,35 @@ final class Route extends Controller
 		 */
 
 		$uri = [];
-		$str_route = '';
-		$reqUri = preg_replace("/(^\/)|(\/$)/", '', self::$request_uri);
+		$str_route = "";
+		$reqUri = preg_replace("/(^\/)|(\/$)/", "", self::$request_uri);
 
 		if (is_array($route))
 		{
 			for ($i = 0; $i < count($route); $i++)
 			{
-				$each_route = preg_replace("/(^\/)|(\/$)/", '', $route[$i]);
+				$each_route = preg_replace("/(^\/)|(\/$)/", "", $route[$i]);
 				array_push($uri, $each_route);
 			}
 		}
 		else
 		{
-			$str_route = preg_replace("/(^\/)|(\/$)/", '', $route);
+			$str_route = preg_replace("/(^\/)|(\/$)/", "", $route);
 		}
 
 		if (in_array($reqUri, $uri) || $reqUri === $str_route)
 		{
-			if (strtoupper($_SERVER['REQUEST_METHOD']) !== 'GET')
+			if (strtoupper($_SERVER["REQUEST_METHOD"]) !== "GET")
 			{
 				http_response_code(405);
 				self::log();
-				exit('Method Not Allowed');
+				exit("Method Not Allowed");
 			}
 
 			// render view page to browser
-			$view = view::render($view) !== 'null' ? view::render($view) : $view;
+			$view = view::render($view) !== "null" ? view::render($view) : $view;
 
-			if ($view != 'null')
+			if ($view != "null")
 			{
 				print_r($view);
 				self::log();
@@ -740,9 +924,9 @@ final class Route extends Controller
 	/**
 	 *   --------------------------------------------------------------
 	 *
-	 *	  |	REDIRECT ROUTE METHOD
+	 *   |   REDIRECT ROUTE METHOD
 	 *
-	 *   |	This method redirects the routes URL to the giving URL directly
+	 *   |   This method redirects the routes URL to the giving URL directly
 	 *
 	 *   @param string $route The requested url to redirect
 	 *   @param string $new_url The new URL route to redirect to
@@ -750,18 +934,21 @@ final class Route extends Controller
 	 *
 	 * ---------------------------------------------------------------
 	 */
-	public static function redirect(string $route, string $new_url, int $code = 302)
-	{
+	public static function redirect (
+	 string $route,
+	 string $new_url,
+	 int $code = 302,
+	): void {
 		if (!empty(self::$request_uri))
 		{
-			$route = preg_replace("/(^\/)|(\/$)/", '', $route);
-			$new_url = preg_replace("/(^\/)|(\/$)/", '', $new_url);
-			$reqUri = preg_replace("/(^\/)|(\/$)/", '', self::$request_uri);
+			$route = preg_replace("/(^\/)|(\/$)/", "", $route);
+			$new_url = preg_replace("/(^\/)|(\/$)/", "", $new_url);
+			$reqUri = preg_replace("/(^\/)|(\/$)/", "", self::$request_uri);
 		}
 		else
 		{
-			$reqUri = '/';
-			$new_url = preg_replace("/(^\/)|(\/$)/", '', $new_url);
+			$reqUri = "/";
+			$new_url = preg_replace("/(^\/)|(\/$)/", "", $new_url);
 		}
 
 		if ($reqUri === $route)
@@ -779,15 +966,12 @@ final class Route extends Controller
 	 *   |   GET ROUTE METHOD
 	 *
 	 *   |   Cannot evaluate {?} URL parameters in route if it's an array
-	 * 
-	 *   @param array|string $route This describes the URL string to check if it matches the request URL, use array of URLs for multiple request
-	 *   @param mixed $callback Can contain any types of data to return to the client side/browser.
 	 *
 	 *   --------------------------------------------------------------
 	 */
-	public static function get(array|string $route, $callback)
+	public static function get (array|string $route, $callback): void
 	{
-		self::any($route, $callback, 'GET');
+		self::any($route, $callback, "GET");
 	}
 
 
@@ -798,15 +982,12 @@ final class Route extends Controller
 	 *   |   POST ROUTE METHOD
 	 *
 	 *   |   Cannot evaluate {?} URL parameters in route if it's an array
-	 * 
-	 *   @param array|string $route This describes the URL string to check if it matches the request URL, use array of URLs for multiple request
-	 *   @param mixed $callback Can contain any types of data to return to the client side/browser.
 	 *
 	 *   --------------------------------------------------------------
 	 */
-	public static function post(array|string $route, $callback)
+	public static function post (array|string $route, $callback): void
 	{
-		self::any($route, $callback, 'POST');
+		self::any($route, $callback, "POST");
 	}
 
 
@@ -817,33 +998,12 @@ final class Route extends Controller
 	 *   |   PUT ROUTE METHOD
 	 *
 	 *   |   Cannot evaluate {?} URL parameters in route if it's an array
-	 * 
-	 *   @param array|string $route This describes the URL string to check if it matches the request URL, use array of URLs for multiple request
-	 *   @param mixed $callback Can contain any types of data to return to the client side/browser.
 	 *
 	 *   --------------------------------------------------------------
 	 */
-	public static function put(array|string $route, $callback)
+	public static function put (array|string $route, $callback): void
 	{
-		self::any($route, $callback, 'PUT');
-	}
-
-
-
-	/**
-	 *   --------------------------------------------------------------
-	 *
-	 *   |   UPDATE ROUTE METHOD
-	 *
-	 *   |   Cannot evaluate {?} URL parameters in route if it's an array
-	 * 
-	 *   @deprecated ^1.2.1 This method has been deprecated since version 1.2.1. Use `Route::put()` instead
-	 *
-	 *   --------------------------------------------------------------
-	 */
-	public static function update(array|string $route, $callback)
-	{
-		self::any($route, $callback, 'UPDATE');
+		self::any($route, $callback, "PUT");
 	}
 
 
@@ -854,17 +1014,12 @@ final class Route extends Controller
 	 *   |   PATCH ROUTE METHOD
 	 *
 	 *   |   Cannot evaluate {?} URL parameters in route if it's an array
-	 * 
-	 *   @since 1.2.0
-	 *   @version ^1.2.1
-	 *   @param array|string $route This describes the URL string to check if it matches the request URL, use array of URLs for multiple request
-	 *   @param mixed $callback Can contain any types of data to return to the client side/browser.
 	 *
 	 *   --------------------------------------------------------------
 	 */
-	public static function patch(array|string $route, $callback)
+	public static function patch (array|string $route, $callback): void
 	{
-		self::any($route, $callback, 'PATCH');
+		self::any($route, $callback, "PATCH");
 	}
 
 
@@ -875,15 +1030,12 @@ final class Route extends Controller
 	 *   |   DELETE ROUTE METHOD
 	 *
 	 *   |   Cannot evaluate {?} URL parameters in route if it's an array
-	 * 	 
-	 *   @param array|string $route This describes the URL string to check if it matches the request URL, use array of URLs for multiple request
-	 *   @param mixed $callback Can contain any types of data to return to the client side/browser.
 	 *
 	 *   --------------------------------------------------------------
 	 */
-	public static function delete(array|string $route, $callback)
+	public static function delete (array|string $route, $callback): void
 	{
-		self::any($route, $callback, 'DELETE');
+		self::any($route, $callback, "DELETE");
 	}
 }
 
@@ -894,58 +1046,60 @@ final class Route extends Controller
  *
  *   |   Router View
  *
- *   Which control the public URL and validating.  
+ *   Which control the public URL and validating.
  *   This class is used in rendering views and parsing public URL in views.
  *
  *   --------------------------------------------------------------
  */
 final class view extends Controller
 {
-
 	/**
-     *   --------------------------------------------------------------
-     *
-     *   |   Render views and parse public URL in views
-     *
-     * @param string $view
-     * @return mixed return the file gotten from the view parameters
-     *
-     *   --------------------------------------------------------------
-     */
-    final public static function render(string $view): mixed
-    {
-        try
-        {
-            // split :: into array and extract the folder and files
-            $file = preg_replace('/(::)|::/', '/', $view);
-				$file = strtolower(trim($file, '\/\/'));
-            $view_path = '/views/' . $file;
+	 *   --------------------------------------------------------------
+	 *
+	 *   |   Render views and parse public URL in views
+	 *
+	 * @param string $view
+	 * @return mixed return the file gotten from the view parameters
+	 *
+	 *   --------------------------------------------------------------
+	 */
+	final public static function render (string $view): mixed
+	{
+		try
+		{
+			// split :: into array and extract the folder and files
+			$file = preg_replace("/(::)|::/", "/", $view);
+			$file = strtolower(trim($file, "\/\/"));
+			$view_path = "/views/" . $file;
 
-            $file_uri = Route::$root_dir . $view_path;
+			$file_uri = Route::$root_dir . $view_path;
 
-            if (is_file($file_uri . '.view.php') && !preg_match('/(..\/)/', $view))
-            {
-                $file_type = Route::file_type($file_uri . '.view.php');
-                header("Content-Type: $file_type");
+			if (
+			is_file($file_uri . ".view.php") &&
+			!preg_match("/(..\/)/", $view)
+			)
+			{
+				$file_type = Route::file_type($file_uri . ".view.php");
+				header("Content-Type: $file_type");
 
-                return self::slides_include($file_uri . '.view.php');
-            }
-            elseif (is_file($file_uri) && !preg_match('/(..\/)/', $view))
-            {
-                $file_type = Route::file_type($file_uri);
-                header("Content-Type: $file_type");
+				return self::slides_include($file_uri . ".view.php");
+			}
+			elseif (is_file($file_uri) && !preg_match("/(..\/)/", $view))
+			{
+				$file_type = Route::file_type($file_uri);
+				header("Content-Type: $file_type");
 
-                return self::slides_include($file_uri);
-            }
-            else
-            {
-                throw new Exception("No view controller path found called `$view`");
-            }
-        }
-        catch ( Exception $e )
-        {
-            print $e->getMessage();
-            return 'null';
-        }
-    }
+				return self::slides_include($file_uri);
+			}
+			else
+			{
+				throw new Exception("No view controller path found called `$view`");
+			}
+		}
+		catch ( Exception $e )
+		{
+			print $e->getMessage();
+			return "null";
+		}
+	}
 }

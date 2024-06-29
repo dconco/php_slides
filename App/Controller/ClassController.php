@@ -18,7 +18,7 @@ class ClassController extends Controller
 {
 
     /**
-     *  @param object|string $class In implementing class constructor from Controller
+     *  @param object|string $class In implementing class constructor from controller
      *  @param string $method In accessing methods to render to routes
      *  @return mixed From class methods and __invoke function
      */
@@ -40,7 +40,7 @@ class ClassController extends Controller
             }
             else
             {
-                throw new Exception("No Controller class found as - $class", 1);
+                throw new Exception("No controller class found as - $class", 1);
             }
         }
         catch ( Exception $e )

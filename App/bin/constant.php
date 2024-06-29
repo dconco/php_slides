@@ -18,5 +18,4 @@
 })();
 
 define('SLIDES_VERSION', '1.2.1');
-define('POST_INVOKE', 770);
-define('POST', 634);
+define('POST_INVOKE', 4444831339);
