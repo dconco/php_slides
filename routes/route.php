@@ -20,10 +20,6 @@ Route::config();
  *  |  that are not coming from route, it redirects to 404
  *  --------------------------------------------------------------------
  */
-Route::map(GET, "/users/{user}/{id}")->name("user");
-
-Route::map(GET, "/about")->name("about");
-
 Route::view("/dashboard", "::Dashboard");
 Route::redirect("/", "/dashboard");
 

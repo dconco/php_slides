@@ -16,6 +16,8 @@ function slides_include ($filename)
 	return $output;
 }
 
+
+
 $routes = [];
 
 /**
@@ -30,6 +32,8 @@ function add_route_name (string $name, string|array $value): void
 	global $routes;
 	$routes[$name] = $value;
 }
+
+
 
 /**
  * Get Route results from named route
@@ -51,19 +55,26 @@ function route (string|null $name = null, array|null $param = null): array|objec
 		{
 			if (preg_match_all("/(?<={).+?(?=})/", $value))
 			{
-				$route_class->$key = function (string ...$args) use ($value)
+				$route_class->$key = function (string ...$args) use ($routes, $value, $key)
 				{
 					$route = '';
 
-					for ($i = 0; $i < count($args); $i++)
+					if (count($args) === 0)
 					{
-						if ($i === 0)
+						$route = $routes[$key];
+					}
+					else
+					{
+						for ($i = 0; $i < count($args); $i++)
 						{
-							$route = preg_replace("/\{[^}]+\}/", $args[$i], $value, 1);
-						}
-						else
-						{
-							$route = preg_replace("/\{[^}]+\}/", $args[$i], $route, 1);
+							if ($i === 0)
+							{
+								$route = preg_replace("/\{[^}]+\}/", $args[$i], $value, 1);
+							}
+							else
+							{
+								$route = preg_replace("/\{[^}]+\}/", $args[$i], $route, 1);
+							}
 						}
 					}
 					return $route;

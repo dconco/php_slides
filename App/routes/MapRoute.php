@@ -5,6 +5,7 @@ namespace PhpSlides\Route;
 use PhpSlides\Instance\MapInstance;
 use PhpSlides\Controller\RouteController;
 
+
 /**
  * Map Configuration
  */
@@ -35,9 +36,9 @@ class MapRoute extends RouteController implements MapInstance
 		if (!empty($_REQUEST["uri"]))
 		{
 			self::$request_uri = preg_replace(
-				"/(^\/)|(\/$)/",
-				"",
-				$_REQUEST["uri"]
+			 "/(^\/)|(\/$)/",
+			 "",
+			 $_REQUEST["uri"]
 			);
 		}
 		else
@@ -45,8 +46,8 @@ class MapRoute extends RouteController implements MapInstance
 			self::$request_uri = "/";
 		}
 		self::$route = is_array($route)
-			? $route
-			: preg_replace("/(^\/)|(\/$)/", "", $route);
+		 ? $route
+		 : preg_replace("/(^\/)|(\/$)/", "", $route);
 
 		// will store all the parameters value in this array
 		$req = [];
@@ -157,10 +158,10 @@ class MapRoute extends RouteController implements MapInstance
 			self::log();
 
 			return [
-				"method" => $method,
-				"route" => self::$route,
-				"params_value" => $req_value,
-				"params" => $req,
+			 "method" => $method,
+			 "route" => self::$route,
+			 "params_value" => $req_value,
+			 "params" => $req,
 			];
 		}
 
@@ -205,8 +206,8 @@ class MapRoute extends RouteController implements MapInstance
 			self::log();
 
 			return [
-				"method" => $method,
-				"route" => self::$route,
+			 "method" => $method,
+			 "route" => self::$route,
 			];
 		}
 		else
