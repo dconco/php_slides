@@ -24,8 +24,6 @@ Route::map(GET, "/users/{user}/{id}")->name("user");
 
 Route::map(GET, "/about")->name("about");
 
-route('ss');
-
 Route::view("/dashboard", "::Dashboard");
 Route::redirect("/", "/dashboard");
 
