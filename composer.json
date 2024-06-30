@@ -15,21 +15,19 @@
     ],
     "license": "MIT",
     "autoload": {
-        "files": [
-            "./configs/env.config.php",
-            "./app/Functions.php",
-            "./configs/cors.php"
-        ],
-        "classmap": [ "*" ]
+        "classmap": ["*"]
     },
     "scripts": {
         "slides-refresh": "composer dump-autoload",
         "create-slides-app": "composer create-project dconco/php_slides"
     },
-    "authors": [ {
+    "authors": [
+        {
             "name": "Dave Conco",
-            "email": "concodave@gmail.com"
-        } ],
+            "email": "concodave@gmail.com",
+            "homepage": "https://dconco.github.io"
+        }
+    ],
     "require": {
         "php": "^8.0",
         "firebase/php-jwt": "^6.9",

@@ -3,7 +3,7 @@
 use PhpSlides\view;
 use PhpSlides\Route;
 
-include dirname(getcwd()) . "/vendor/autoload.php";
+include dirname(__DIR__) . "/vendor/autoload.php";
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------------
