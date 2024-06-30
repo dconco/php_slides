@@ -84,10 +84,10 @@ interface RouteInstance
 	 * Check out documentation for using Map method
 	 *
 	 * @link https://github.com/dconco/php_slides
-	 * @param string $method
-	 * @param string|array $route
+	 * @param string|array $method Can also be used as `$route` param if the `$route` param is not specified
+	 * @param string|array|null $route Route parameter
 	 */
-	public static function map (string $method, string|array $route): Route;
+	public static function map (string|array $method, string|array|null $route = null): Route;
 
 	/**
 	 * name METHOD

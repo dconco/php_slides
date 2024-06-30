@@ -144,7 +144,7 @@ class MapRoute extends RouteController implements MapInstance
 		if (preg_match("/$reqUri/", self::$route))
 		{
 			// checks if the requested method is of the given route
-			if (strtoupper($_SERVER["REQUEST_METHOD"]) !== self::$method)
+			if (strtoupper($_SERVER["REQUEST_METHOD"]) !== self::$method && strtolower(self::$method) !== 'dynamic')
 			{
 				http_response_code(405);
 				self::log();
@@ -191,7 +191,7 @@ class MapRoute extends RouteController implements MapInstance
 		self::$request_uri === $str_route
 		)
 		{
-			if (strtoupper($_SERVER["REQUEST_METHOD"]) !== self::$method)
+			if (strtoupper($_SERVER["REQUEST_METHOD"]) !== self::$method && strtolower(self::$method) !== 'dynamic')
 			{
 				http_response_code(405);
 				self::log();
