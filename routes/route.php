@@ -3,8 +3,6 @@
 use PhpSlides\view;
 use PhpSlides\Route;
 
-include dirname(__DIR__) . "/vendor/autoload.php";
-
 /**
  * ---------------------------------------------------------------------------------------------------------------------------
  * | This function must be presented at the beginning before any other codes for security reasons and in handling files request
