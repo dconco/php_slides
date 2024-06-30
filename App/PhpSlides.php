@@ -20,7 +20,7 @@ use Closure;
 use Exception;
 use PhpSlides\Route\MapRoute;
 use PhpSlides\Controller\Controller;
-use PhpSlides\Instance\RouteInstance;
+use PhpSlides\Instance\RouteInterface;
 
 
 
@@ -43,7 +43,7 @@ use PhpSlides\Instance\RouteInstance;
  *   -------------------------------------------------------------------------------
  */
 
-final class Route extends Controller implements RouteInstance
+final class Route extends Controller implements RouteInterface
 {
 	/**
 	 *  `$log` method prints logs in `.log` file in the root of the project each time any request has been received, when setted to true.

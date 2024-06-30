@@ -8,4 +8,4 @@ RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 # Redirect all folders and files in the root project to routes.php
 RewriteCond %{REQUEST_FILENAME} !-d|-d
 RewriteCond %{REQUEST_FILENAME} !-f|-f
-RewriteRule ^(.*) routes/route.php?uri=$1 [QSA,L]
+RewriteRule ^(.*) configs/autoload.php?uri=$1 [QSA,L]
