@@ -2,6 +2,7 @@
 /vendor
 /.idea
 /.vscode
-composer.lock
-access_log
 .log
+access_log
+composer.lock
+composer.phar

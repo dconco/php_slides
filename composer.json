@@ -1,8 +1,8 @@
 {
     "name": "dconco/php_slides",
-    "description": "PhpSlides a light fast framework for letting you create a secured Routing in php and secured API, which prevents SQL injections, and from XSS attack & CSRF.",
+    "description": "PhpSlides a MVC light fast framework for letting you create a secured Routing and API in php, which prevents SQL injections.",
     "homepage": "https://github.com/dconco/php_slides",
-    "version": "1.2.1",
+    "version": "1.2.2-alpha",
     "type": "project",
     "keywords": [
         "php",
@@ -29,7 +29,7 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": ">=8.2",
         "firebase/php-jwt": "^6.9",
         "vlucas/phpdotenv": "^5.5"
     },

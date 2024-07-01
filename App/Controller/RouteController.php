@@ -51,7 +51,7 @@ class RouteController
          $root = strtolower(Route::$root_dir . "/");
          $root = str_replace("c:\\", "c:\\\\", $root);
 
-         $find = "/routes/route.php";
+         $find = "/configs/autoload.php";
          $self = htmlspecialchars($_SERVER["PHP_SELF"]);
          $view = substr_replace(
             $self,

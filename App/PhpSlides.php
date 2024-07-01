@@ -20,9 +20,7 @@ use Closure;
 use Exception;
 use PhpSlides\Route\MapRoute;
 use PhpSlides\Controller\Controller;
-use PhpSlides\Instance\RouteInterface;
-
-
+use PhpSlides\Interface\RouteInterface;
 
 /**
  *   -------------------------------------------------------------------------------
@@ -83,7 +81,6 @@ final class Route extends Controller implements RouteInterface
 
 	protected static array $route;
 
-
 	/**
 	 * Call all static methods
 	 * and initialize them
@@ -100,8 +97,6 @@ final class Route extends Controller implements RouteInterface
 	{
 		//
 	}
-
-
 
 	/**
 	 *   ------------------------------------------------------
@@ -140,12 +135,16 @@ final class Route extends Controller implements RouteInterface
 				{
 					case "css":
 						return "text/css";
+					case "txt":
+						return "text/plain";
 					case "csv":
 						return "text/csv";
 					case "htm":
 						return "text/htm";
 					case "html":
 						return "text/html";
+					case "xml":
+						return "text/xml";
 					case "js":
 						return "application/javascript";
 					case "pdf":
@@ -187,8 +186,6 @@ final class Route extends Controller implements RouteInterface
 			return false;
 		}
 	}
-
-
 
 	/**
 	 *   ---------------------------------------------------------------------------------------------------------
@@ -232,9 +229,6 @@ final class Route extends Controller implements RouteInterface
 			$config_file = self::config_file();
 
 			$charset = $config_file["charset"];
-
-			$route_file = __DIR__ . "/resources/route.names.php";
-			file_put_contents($route_file, "");
 
 			/**
 			 *   ----------------------------------------------
@@ -425,7 +419,7 @@ final class Route extends Controller implements RouteInterface
 			$data =
 			 $concatted .
 			 $gen_codes9 .
-			 "\n\ndefine('SLIDES_VERSION', '1.2.1');\n";
+			 "\n\ndefine('SLIDES_VERSION', '1.2.2-alpha');\n";
 
 			$arr_num = [];
 			$arr_const_types = [];
@@ -479,8 +473,6 @@ final class Route extends Controller implements RouteInterface
 			exit();
 		}
 	}
-
-
 
 	/**
 	 *   ------------------------------------------------------------------------
@@ -702,8 +694,6 @@ final class Route extends Controller implements RouteInterface
 		}
 	}
 
-
-
 	/**
 	 * MAP method
 	 * Check out documentation for using Map method
@@ -712,12 +702,14 @@ final class Route extends Controller implements RouteInterface
 	 * @param string|array $method Can also be used as `$route` param if the `$route` param is not specified
 	 * @param string|array|null $route Route parameter
 	 */
-	public static function map (string|array $method, string|array|null $route = null): Route
-	{
+	public static function map (
+	 string|array $method,
+	 string|array|null $route = null,
+	): Route {
 		if (!$route)
 		{
 			$route = $method;
-			$method = 'dynamic';
+			$method = "dynamic";
 		}
 
 		$match = new MapRoute();
@@ -726,8 +718,6 @@ final class Route extends Controller implements RouteInterface
 
 		return new self();
 	}
-
-
 
 	/**
 	 * name METHOD
@@ -742,8 +732,6 @@ final class Route extends Controller implements RouteInterface
 
 		return new self();
 	}
-
-
 
 	/**
 	 * Action method
@@ -793,8 +781,6 @@ final class Route extends Controller implements RouteInterface
 		}
 	}
 
-
-
 	/**
 	 * Controller method
 	 * Work with map controller route
@@ -839,8 +825,6 @@ final class Route extends Controller implements RouteInterface
 		}
 	}
 
-
-
 	/**
 	 * file method
 	 * return view file directly
@@ -860,8 +844,6 @@ final class Route extends Controller implements RouteInterface
 			exit();
 		}
 	}
-
-
 
 	/**
 	 *   ---------------------------------------------------------------------------
@@ -925,8 +907,6 @@ final class Route extends Controller implements RouteInterface
 		}
 	}
 
-
-
 	/**
 	 *   --------------------------------------------------------------
 	 *
@@ -964,8 +944,6 @@ final class Route extends Controller implements RouteInterface
 		}
 	}
 
-
-
 	/**
 	 *   --------------------------------------------------------------
 	 *
@@ -979,8 +957,6 @@ final class Route extends Controller implements RouteInterface
 	{
 		self::any($route, $callback, "GET");
 	}
-
-
 
 	/**
 	 *   --------------------------------------------------------------
@@ -996,8 +972,6 @@ final class Route extends Controller implements RouteInterface
 		self::any($route, $callback, "POST");
 	}
 
-
-
 	/**
 	 *   --------------------------------------------------------------
 	 *
@@ -1011,8 +985,6 @@ final class Route extends Controller implements RouteInterface
 	{
 		self::any($route, $callback, "PUT");
 	}
-
-
 
 	/**
 	 *   --------------------------------------------------------------
@@ -1028,8 +1000,6 @@ final class Route extends Controller implements RouteInterface
 		self::any($route, $callback, "PATCH");
 	}
 
-
-
 	/**
 	 *   --------------------------------------------------------------
 	 *
@@ -1044,8 +1014,6 @@ final class Route extends Controller implements RouteInterface
 		self::any($route, $callback, "DELETE");
 	}
 }
-
-
 
 /**
  *   --------------------------------------------------------------
