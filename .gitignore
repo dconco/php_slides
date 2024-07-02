@@ -1,0 +1,8 @@
+/node_modules
+/vendor
+/.idea
+/.vscode
+.log
+access_log
+composer.lock
+composer.phar

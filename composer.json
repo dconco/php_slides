@@ -1,0 +1,46 @@
+{
+    "name": "dconco/php_slides",
+    "description": "PhpSlides a MVC light fast framework for letting you create a secured Routing and API in php, which prevents SQL injections.",
+    "homepage": "https://github.com/dconco/php_slides",
+    "version": "1.2.2-alpha",
+    "type": "project",
+    "keywords": [
+        "php",
+        "api",
+        "router",
+        "phpslides",
+        "php_slides",
+        "slides",
+        "server"
+    ],
+    "license": "MIT",
+    "autoload": {
+        "classmap": ["*"]
+    },
+    "scripts": {
+        "slides-refresh": "composer dump-autoload",
+        "create-slides-app": "composer create-project dconco/php_slides"
+    },
+    "authors": [
+        {
+            "name": "Dave Conco",
+            "email": "concodave@gmail.com",
+            "homepage": "https://dconco.github.io"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "firebase/php-jwt": "^6.9",
+        "vlucas/phpdotenv": "^5.5"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": false
+        }
+    },
+    "minimum-stability": "alpha",
+    "prefer-stable": true
+}
