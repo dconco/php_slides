@@ -4,7 +4,7 @@
 <head>
     <title>404 | Page Not Found</title>
     <!-- includes the Header.php file -->
-    <include path="::root/views/components/Header.php" ! />
+    <include path="../components/Header.php" />
 
     <style>
         h3.text {
@@ -21,7 +21,7 @@
 <body>
     <div class="container">
         <h3 class="text">404 | Page Not Found</h3>
-        <a href="::view/"><button class="btn">Navigate Back To Dashboard</button></a>
+        <a href="/"><button class="btn">Navigate Back To Dashboard</button></a>
     </div>
 </body>
 

@@ -18,8 +18,8 @@ Route::config();
  * | that are not coming from route, it redirects to 404
  * --------------------------------------------------------------------
  */
-Route::view("/dashboard", "::Dashboard");
-Route::redirect("/", "/dashboard");
+Route::view('/dashboard', '::Dashboard');
+Route::redirect('/', '/dashboard');
 
 // Handle not found error pages
-Route::any("*", view::render("::Errors::404"));
+Route::any('*', view::render('Errors::404'));

@@ -9,12 +9,12 @@
 <html lang="en">
 
 <!-- PHP code start -->
-<?php $text = 'Click to view documentation' ?>
+<?php $text = 'Click to view documentation'; ?>
 <!-- // End PHP code -->
 
 <head>
     <title>Dashboard | PhpSlides</title>
-    <include path="::root/views/components/Header.php" ! />
+    <include path="components/Header.php" />
 
     <style>
         .logo {
@@ -52,12 +52,12 @@
 <body>
     <div class="container">
         <div class="logo">
-            <img src="::view/assets/images/svg/logo-no-background.svg" alt="PhpSlides Logo">
+            <img src="<? asset('Assets::Images::Svg::Logo-no-background.svg') ?>" alt="PhpSlides Logo">
         </div>
 
         <div class="description">
             <p>
-                PhpSlides let you create a secured Routing in php and secured API, which prevents SQL injections, and from XSS attack & CSRF.
+               PhpSlides let you create a secured Routing in php and secured API, which prevents SQL injections, and from XSS attack & CSRF.
             </p>
             <p>
                 <a href="//packagist.org/packages/dconco/php_slides" class="link">
