@@ -17,5 +17,5 @@
 	@'generated pages';
 })();
 
-define('SLIDES_VERSION', '1.2.1');
-define('POST_INVOKE', 6659164019);
+define('SLIDES_VERSION', '1.2.2-alpha');
+define('POST_INVOKE', 5956176518);

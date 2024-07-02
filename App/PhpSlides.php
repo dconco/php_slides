@@ -1067,7 +1067,7 @@ final class view extends Controller
 			}
 			else
 			{
-				throw new Exception("No view controller path found called `$view`");
+				throw new Exception("No view file path found called `$view`");
 			}
 		}
 		catch ( Exception $e )
