@@ -1,0 +1,47 @@
+{
+    "name": "dconco/php_slides",
+    "description": "Slides to the next level in PHP using PhpSlides, a light MVC fast framework",
+    "homepage": "https://github.com/dconco/php_slides",
+    "version": "1.2.2",
+    "type": "project",
+    "keywords": [
+        "php",
+        "api",
+        "router",
+        "phpslides",
+        "php_slides",
+        "server",
+        "framework"
+    ],
+    "license": "MIT",
+    "autoload": {
+        "classmap": ["*"]
+    },
+    "scripts": {
+        "slides-refresh": "composer dump-autoload",
+        "create-slides-app": "composer create-project dconco/php_slides"
+    },
+    "authors": [{
+        "name": "Dave Conco",
+        "email": "concodave@gmail.com",
+        "homepage": "https://dconco.github.io"
+    }],
+    "require": {
+        "php": "^8.0 || ^8.3",
+        "firebase/php-jwt": "^6.9",
+        "phpmailer/phpmailer": "^6.9",
+        "vlucas/phpdotenv": "^5.5"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": false
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

@@ -1,0 +1,12 @@
+/node_modules
+/public/build
+/public/storage
+/storage/*.key
+/vendor
+/.idea
+/.vscode
+.log
+access_log
+composer.lock
+composer.phar
+error.log

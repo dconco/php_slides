@@ -1,0 +1,5 @@
+/.github export-ignore
+/ChangeLog.md export-ignore
+/.gitattributes export-ignore
+/.editorconfig export-ignore
+/php_slides.code-workspace export-ignore

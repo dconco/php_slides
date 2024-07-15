@@ -1,0 +1,80 @@
+#!/usr/bin/env php
+<?php
+
+use PhpSlides\Http\Console;
+
+# Check for the command and arguments
+$command = $argv[1] ?? '';
+$args = array_slice($argv, 2);
+
+shell_exec('composer dump-autoload');
+
+# Load autoloader if needed
+include_once dirname(__DIR__) . '/vendor/autoload.php';
+
+# Handle commands
+switch ($command)
+{
+	case 'controller':
+		echo "Creating controller...\n";
+		sleep(1);
+
+		$cn = $args[0];
+		$ct = $args[1] ?? null;
+		$allTypes = ['-s', '--strict'];
+		
+		if ($ct !== null && !in_array($ct, $allTypes)) {
+		   exit("\033[31mInvalid Arguments: $ct\033[0m\n");
+		}
+
+		Console::createController($cn, $ct);
+		echo "\n\033[32mCreated controller successfully at \033[4m`controller/$cn.php`\033[0m";
+		break;
+
+	case 'api-controller':
+		echo "Creating api controller...\n";
+		sleep(1);
+
+		$cn = $args[0];
+		$ct = $args[1] ?? null;
+		$allTypes = ['-s', '--strict'];
+
+		if ($ct !== null && !in_array($ct, $allTypes)) {
+		   exit("\033[31mInvalid Arguments: $ct\033[0m\n");
+		}
+
+		Console::createApiController($cn, $ct ?? null);
+		echo "\n\033[32mCreated api controller successfully at \033[4m`controller/api/$cn.php`\033[0m";
+		break;
+
+	case 'middleware':
+		echo "Creating middleware...\n";
+		sleep(1);
+
+		$cn = $args[0];
+		$ct = $args[1] ?? null;
+		$allTypes = ['-s', '--strict'];
+
+		if ($ct !== null && !in_array($ct, $allTypes)) {
+		   exit("\033[31mInvalid Arguments: $ct\033[0m\n");
+		}
+
+		Console::createMiddleware($cn, $ct ?? null);
+		echo "\n\033[32mCreated middleware successfully at \033[4m`middleware/$cn.php`\033[0m";
+		break;
+
+	case '--help':
+		echo Console::showHelp();
+		break;
+	case '-h':
+		echo Console::showHelp();
+		break;
+	case null:
+		echo Console::showHelp();
+		break;
+	default:
+		echo "\033[31mCommand not recognized.\033[0m\nFor list of commands run php create --help";
+		break;
+}
+
+Console::finally();

@@ -1,0 +1,9 @@
+<?php
+
+final class MiddlewareName implements MiddlewareInterface
+{
+	public function handle(Request $request, Closure $next)
+	{
+		return $next($request);
+	}
+}
