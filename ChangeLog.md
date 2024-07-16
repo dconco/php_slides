@@ -27,3 +27,9 @@
 
 -  Completed API Controller function.
 -  Completed middleware function.
+
+## Tuesday, July 16 2024
+
+- Worked on controller and Middleware
+- Added mapping method in Api controller
+- Api controller now accepts naming route in mapping method.
