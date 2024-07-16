@@ -9,9 +9,9 @@ Api::v1()
 	->middleware(['example'])->name('example.user');*/
 
 Api::v1()
-	->define('/example/user', ApiExampleController::class)
-	->map([
-		'/' => '@index',
-		'/{id}' => '@show',
-		'/delete/{id}' => '@destroy'
-	])->name('example.user');
+ ->define('/example/user', ApiExampleController::class)
+ ->map([
+  '/' => [ GET, '@index' ],
+  '/{id}' => [ GET, '@show' ],
+  '/delete/{id}' => [ DELETE, '@destroy' ]
+ ])->name('example.user');

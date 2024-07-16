@@ -11,13 +11,14 @@ final class ApiExampleController implements ApiController
 {
 	public function index (Request $request)
 	{
-		return 'Index Method';
+		$route = route('example.user::0');
+		return "Index Method.\nRoute = $route";
 	}
 
 	public function show (Request $request)
 	{
 		$user_id = $request->urlParam()->id;
-		$route = route('example.user', [ $user_id ]);
+		$route = route('example.user::1', [ $user_id ]);
 
 		return "Show Method.\nUser ID = $user_id\nRoute = $route";
 	}
@@ -36,5 +37,7 @@ final class ApiExampleController implements ApiController
 
 	public function destroy (Request $request)
 	{
+		$user_id = $request->urlParam()->id;
+		return "Deleting User: UserID = $user_id";
 	}
 }

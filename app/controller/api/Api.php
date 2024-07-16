@@ -6,52 +6,51 @@ namespace PhpSlides\Http;
 
 use Exception;
 use PhpSlides\Route\MapRoute;
-use PhpSlides\Controller\Controller;
 use PhpSlides\Interface\ApiInterface;
+use PhpSlides\Http\Resources\ApiResources;
 use PhpSlides\Interface\MiddlewareInterface;
 
-final class Api extends Controller implements ApiInterface
+final class Api extends ApiResources implements ApiInterface
 {
 	public static string $BASE_URL = '/api/';
 
 	private static string $version = 'v1';
 
-	private static array|bool $map_info;
-
-	private static array $allRoutes;
-
-	private static array $regRoute;
-
-	private static ?array $route = null;
-
-	private static ?array $define = null;
-
-	private static ?array $middleware = null;
-
-	public static function __callStatic($method, $args): self
+	public static function __callStatic ($method, $args): self
 	{
-		if (str_starts_with($method, 'v')) {
+		if (str_starts_with($method, 'v'))
+		{
 			$method_v = str_replace('_', '.', $method);
 			self::$version = $method_v;
 
 			return new self();
-		} else {
+		}
+		else
+		{
 			throw new Exception("Invalid version method `$method`");
 		}
 	}
 
-	public function name(string $name): self
+	public function name (string $name): self
 	{
+		if (is_array(end(self::$regRoute)))
+		{
+			for ($i = 0; $i < count(end(self::$regRoute)); $i++)
+			{
+				add_route_name($name . '::' . $i, end(self::$regRoute)[$i]);
+				self::$allRoutes[$name . '::' . $i] = end(self::$regRoute)[$i];
+			}
+		}
 		add_route_name($name, end(self::$regRoute));
 		self::$allRoutes[$name] = end(self::$regRoute);
 
 		return $this;
 	}
 
-	public function route(string $url, string $controller): self
+	public function route (string $url, string $controller): self
 	{
 		$uri = strtolower(
-			self::$BASE_URL . self::$version . '/' . trim($url, '/')
+		 self::$BASE_URL . self::$version . '/' . trim($url, '/')
 		);
 
 		self::$regRoute[] = $uri;
@@ -59,202 +58,104 @@ final class Api extends Controller implements ApiInterface
 		$match = new MapRoute();
 		self::$map_info = $match->match('dynamic', $uri);
 
-		if (self::$map_info) {
+		if (self::$map_info)
+		{
 			self::$map_info['method'] = $_SERVER['REQUEST_METHOD'];
 
 			self::$route = [
-				'url' => $uri,
-				'controller' => $controller
+			 'url' => $uri,
+			 'controller' => $controller
 			];
 		}
 
 		return $this;
 	}
 
-	private function __route(): void
+	public function middleware (array $middleware): self
 	{
-		print_r(self::__routeSelection());
-		exit(0);
-	}
-
-	private function __routeSelection(Request $request = null)
-	{
-		$route = self::$route;
-		$info = self::$map_info;
-
-		$method = $_SERVER['REQUEST_METHOD'];
-		$controller = $route['controller'];
-
-		if (!class_exists($controller)) {
-			http_response_code(405);
-			throw new Exception(
-				"Api controller class `$controller` does not exist."
-			);
-		}
-
-		$params = $info['params'] ?? null;
-
-		if (!class_exists($controller)) {
-			throw new Exception(
-				"Api controller class does not exist: `$controller`"
-			);
-		}
-		$cc = new $controller();
-
-		$r_method = '';
-		$method = strtoupper($_SERVER['REQUEST_METHOD']);
-
-		switch ($method) {
-			case 'GET':
-				global $r_method;
-				$r_method = $params !== null ? 'show' : 'index';
-				break;
-
-			case 'POST':
-				$r_method = 'store';
-				break;
-
-			case 'PUT':
-				$r_method = 'update';
-				break;
-
-			case 'PATCH':
-				$r_method = 'patch';
-				break;
-
-			case 'DELETE':
-				$r_method = 'destroy';
-				break;
-
-			default:
-				if (method_exists($cc, '__default')) {
-					$r_method = 'default';
-				} else {
-					self::log();
-					exit('Request method not allowed.');
-				}
-				break;
-		}
-
-		if ($cc instanceof ApiController) {
-			if ($request === null) {
-				$request = new Request($params);
-			}
-
-			self::log();
-			return $cc->$r_method($request);
-		} else {
-			throw new Exception(
-				'Api controller class must implements `ApiController`'
-			);
-		}
-	}
-
-	public function middleware(array $middleware): self
-	{
-		if (self::$map_info) {
+		if (self::$map_info)
+		{
 			self::$middleware = $middleware;
 		}
 
 		return $this;
 	}
 
-	private function __middleware(): void
-	{
-		$middleware = self::$middleware ?? [];
-		$response = '';
-
-		$params = self::$map_info['params'] ?? null;
-		$request = new Request($params);
-
-		for ($i = 0; $i < count((array) $middleware); $i++) {
-			include_once dirname(__DIR__) . '/../../configs/middlewares.php';
-
-			if (array_key_exists($middleware[$i], $middlewares)) {
-				$middleware = $middlewares[$middleware[$i]];
-			} else {
-				throw new Exception(
-					'No Registered Middleware as `' . $middleware[$i] . '`'
-				);
-			}
-
-			if (!class_exists($middleware)) {
-				throw new Exception(
-					"Middleware class does not exist: `{$middleware}`"
-				);
-			}
-			$mw = new $middleware();
-
-			if ($mw instanceof MiddlewareInterface) {
-				$next = function (Request $request) {
-					return self::__routeSelection($request);
-				};
-
-				$response = $mw->handle($request, $next);
-			} else {
-				throw new Exception(
-					'Middleware class must implements `MiddlewareInterface`'
-				);
-			}
-		}
-
-		print_r($response);
-		self::log();
-		exit();
-	}
-
-	public function define(string $url, string $controller): self
+	public function define (string $url, string $controller): self
 	{
 		self::$define = [
-			'url' => $url,
-			'controller' => $controller
+		 'url' => $url,
+		 'controller' => $controller
 		];
 
 		return $this;
 	}
 
-	private function map(array $rest_url): void
+	public function map (array $rest_url): self
 	{
 		$define = self::$define;
 
-		if ($define !== null) {
+		if ($define !== null)
+		{
 			$url = $define['url'];
 			$controller = $define['controller'];
 
+			$method = [];
 			$regUrl = [];
-			foreach ($rest_url as $route => $method) {
+
+			foreach ($rest_url as $route => $c_method)
+			{
+				$method[] = $c_method[0];
 				$full_url = $url . $route;
 
 				$uri = strtolower(
-					self::$BASE_URL . self::$version . '/' . trim($full_url, '/')
+				 rtrim(self::$BASE_URL, '/') . '/' . self::$version . '/' . trim($full_url, '/')
 				);
 
 				$regUrl[] = $uri;
+
+				$match = new MapRoute();
+				self::$map_info = $match->match($c_method[0], $uri);
+
+				if (self::$map_info)
+				{
+					self::$map = [
+					 'url' => $uri,
+					 'c_method' => ltrim($c_method[1], '@'),
+					 'controller' => $controller
+					];
+
+					break;
+				}
 			}
+
 			self::$regRoute[] = $regUrl;
 
-			$match = new MapRoute();
-			self::$map_info = $match->match('dynamic', $uri);
-
-			if (self::$map_info) {
-				self::$map_info['method'] = $_SERVER['REQUEST_METHOD'];
-
-				self::$route = [
-					'url' => $uri,
-					'controller' => $controller
-				];
+			if (!in_array($_SERVER['REQUEST_METHOD'], $method))
+			{
+				http_response_code(405);
+				self::log();
+				exit('Method Not Allowed');
 			}
 		}
+		return $this;
 	}
 
-	public function __destruct()
+	public function __destruct ()
 	{
-		if (self::$middleware !== null) {
+		if (self::$middleware !== null)
+		{
 			self::__middleware();
 		}
 
-		if (self::$route !== null) {
+		if (self::$route !== null)
+		{
 			self::__route();
+		}
+
+		if (self::$map !== null)
+		{
+			self::__map();
 		}
 	}
 }
