@@ -8,7 +8,6 @@ use Exception;
 use PhpSlides\Route\MapRoute;
 use PhpSlides\Interface\ApiInterface;
 use PhpSlides\Http\Resources\ApiResources;
-use PhpSlides\Interface\MiddlewareInterface;
 
 final class Api extends ApiResources implements ApiInterface
 {
