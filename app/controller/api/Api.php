@@ -9,12 +9,33 @@ use PhpSlides\Route\MapRoute;
 use PhpSlides\Interface\ApiInterface;
 use PhpSlides\Http\Resources\ApiResources;
 
+/**
+ * The Api class provides a fluent interface to define API routes,
+ * apply middleware, and manage route mapping.
+ */
 final class Api extends ApiResources implements ApiInterface
 {
+	/**
+	 * The base URL for all API routes. Default is '/api/'
+	 * @var string
+	 */
 	public static string $BASE_URL = '/api/';
 
+	/**
+	 * The API version. Default is 'v1'
+	 * @var string
+	 */
 	private static string $version = 'v1';
 
+	/**
+	 * Handles static method calls to set the API version dynamically.
+	 * 
+	 * @param string $method The method name which starts with 'v' followed by the version number. Use `_` in place of `.`
+	 * @param mixed $args The arguments for the method (not used).
+	 * 
+	 * @throws \Exception
+	 * @return \PhpSlides\Http\Api
+	 */
 	public static function __callStatic ($method, $args): self
 	{
 		if (str_starts_with($method, 'v'))
@@ -30,6 +51,12 @@ final class Api extends ApiResources implements ApiInterface
 		}
 	}
 
+	/**
+	 * Assigns a name to the last registered route for easier reference.
+	 * 
+	 * @param string $name The name to assign to the route.
+	 * @return \PhpSlides\Http\Api
+	 */
 	public function name (string $name): self
 	{
 		if (is_array(end(self::$regRoute)))
