@@ -3,9 +3,12 @@
 
 namespace PhpSlides\Resources;
 
+use Exception;
 use PhpSlides\view;
 use PhpSlides\Route;
+use PhpSlides\Http\Request;
 use PhpSlides\Controller\Controller;
+use PhpSlides\Interface\MiddlewareInterface;
 
 abstract class Resources extends Controller
 {

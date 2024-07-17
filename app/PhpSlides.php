@@ -17,12 +17,10 @@ declare(strict_types=1);
 namespace PhpSlides;
 
 use Exception;
-use PhpSlides\Http\Request;
 use PhpSlides\Route\MapRoute;
 use PhpSlides\Resources\Resources;
 use PhpSlides\Controller\Controller;
 use PhpSlides\Interface\RouteInterface;
-use PhpSlides\Interface\MiddlewareInterface;
 
 /**
  *   -------------------------------------------------------------------------------
@@ -848,7 +846,6 @@ final class Route extends Resources implements RouteInterface
 		self::$route[] = $route;
 		return new self();
 	}
-
 
 	public function __destruct ()
 	{
