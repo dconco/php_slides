@@ -34,7 +34,7 @@ final class Api extends ApiResources implements ApiInterface
 	 * @param mixed $args The arguments for the method (not used).
 	 * 
 	 * @throws \Exception
-	 * @return \PhpSlides\Http\Api
+	 * @return self
 	 */
 	public static function __callStatic ($method, $args): self
 	{
@@ -55,7 +55,7 @@ final class Api extends ApiResources implements ApiInterface
 	 * Assigns a name to the last registered route for easier reference.
 	 * 
 	 * @param string $name The name to assign to the route.
-	 * @return \PhpSlides\Http\Api
+	 * @return self
 	 */
 	public function name (string $name): self
 	{
@@ -73,8 +73,20 @@ final class Api extends ApiResources implements ApiInterface
 		return $this;
 	}
 
+	/**
+	 * Defines a new route with a URL and a controller.
+	 * 
+	 * @param string $url The Base URL of the route.
+	 * @param string $controller The controller handling the route.
+	 * @return self
+	 */
 	public function route (string $url, string $controller): self
 	{
+		$define = self::$define;
+
+		// checks if $define is set, then assign $define methods to $url & $controller parameters
+		$url = ($define !== null) ? (empty($url) ? $define['url'] : $define['url'] . '/' . trim($url, '/')) : $url;
+
 		$uri = strtolower(
 		 self::$BASE_URL . self::$version . '/' . trim($url, '/')
 		);
@@ -92,11 +104,20 @@ final class Api extends ApiResources implements ApiInterface
 			 'url' => $uri,
 			 'controller' => $controller
 			];
+
+			if ($define !== null && empty($controller))
+				self::$route['c_methood'] = $controller;
 		}
 
 		return $this;
 	}
 
+	/**
+	 * Applies middleware to the current route.
+	 * 
+	 * @param array $middleware An array of middleware classes.
+	 * @return self
+	 */
 	public function middleware (array $middleware): self
 	{
 		if (self::$map_info)
@@ -107,6 +128,13 @@ final class Api extends ApiResources implements ApiInterface
 		return $this;
 	}
 
+	/**
+	 * Defines a base URL and controller for subsequent route mappings.
+	 * 
+	 * @param string $url The base URL for the routes.
+	 * @param string $controller The controller handling the routes.
+	 * @return self
+	 */
 	public function define (string $url, string $controller): self
 	{
 		self::$define = [
@@ -117,6 +145,12 @@ final class Api extends ApiResources implements ApiInterface
 		return $this;
 	}
 
+	/**
+	 * Maps multiple HTTP methods to a URL with their corresponding controller methods.
+	 * 
+	 * @param array An associative array where the key is the route and the value is an array with the HTTP method and controller method.
+	 * @return self
+	 */
 	public function map (array $rest_url): self
 	{
 		$define = self::$define;
@@ -167,6 +201,9 @@ final class Api extends ApiResources implements ApiInterface
 		return $this;
 	}
 
+	/**
+	 * Automatically handles middleware, route, and map finalization when the object is destroyed.
+	 */
 	public function __destruct ()
 	{
 		if (self::$middleware !== null)
