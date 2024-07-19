@@ -36,4 +36,7 @@
 
 ## Friday, July 19 2024
 
-- Make API define() method now working with route() method.
+- Make API `define()` method now working with `route()` method.
+- Work on `route()` so when using `define()` with `route()` they can pass second parameter in `route()` as controller method for the defined route.
+- Added more methods to `Request` class.
+- Added documentation to each methods in Request class and interface with Api class and interface.

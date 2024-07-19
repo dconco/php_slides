@@ -25,13 +25,13 @@ abstract class ApiResources extends Controller
 
 	protected static ?array $map = null;
 
-	protected function __route (): void
+	protected function __route(): void
 	{
 		print_r(self::__routeSelection());
 		exit();
 	}
 
-	protected function __routeSelection (Request $request = null)
+	protected function __routeSelection(Request $request = null)
 	{
 		$info = self::$map_info;
 		$route = self::$route ?? self::$map;
@@ -39,20 +39,18 @@ abstract class ApiResources extends Controller
 		$method = $_SERVER['REQUEST_METHOD'];
 		$controller = $route['controller'];
 
-		if (!class_exists($controller))
-		{
+		if (!class_exists($controller)) {
 			http_response_code(405);
 			throw new Exception(
-			 "Api controller class `$controller` does not exist."
+				"Api controller class `$controller` does not exist."
 			);
 		}
 
 		$params = $info['params'] ?? null;
 
-		if (!class_exists($controller))
-		{
+		if (!class_exists($controller)) {
 			throw new Exception(
-			 "Api controller class does not exist: `$controller`"
+				"Api controller class does not exist: `$controller`"
 			);
 		}
 		$cc = new $controller();
@@ -60,14 +58,12 @@ abstract class ApiResources extends Controller
 		$r_method = '';
 		$method = strtoupper($_SERVER['REQUEST_METHOD']);
 
-		if (isset($route['c_method']))
-		{
+		if (isset($route['c_method'])) {
 			$r_method = $route['c_method'];
 			goto EXECUTE;
 		}
 
-		switch ($method)
-		{
+		switch ($method) {
 			case 'GET':
 				global $r_method;
 				$r_method = $params !== null ? 'show' : 'index';
@@ -90,12 +86,9 @@ abstract class ApiResources extends Controller
 				break;
 
 			default:
-				if (method_exists($cc, '__default'))
-				{
-					$r_method = 'default';
-				}
-				else
-				{
+				if (method_exists($cc, '__default')) {
+					$r_method = '__default';
+				} else {
 					http_response_code(405);
 					self::log();
 					exit('Request method not allowed.');
@@ -104,25 +97,25 @@ abstract class ApiResources extends Controller
 		}
 
 		EXECUTE:
-		if ($cc instanceof ApiController)
-		{
-			if ($request === null)
-			{
+		if ($cc instanceof ApiController) {
+			if ($request === null) {
 				$request = new Request($params);
 			}
 
+			$response = $cc->$r_method($request);
+			$r_method = 'error';
+			$response = !$response ? $cc->$r_method($request) : $response;
+
 			self::log();
-			return $cc->$r_method($request);
-		}
-		else
-		{
+			return $response;
+		} else {
 			throw new Exception(
-			 'Api controller class must implements `ApiController`'
+				'Api controller class must implements `ApiController`'
 			);
 		}
 	}
 
-	protected function __middleware (): void
+	protected function __middleware(): void
 	{
 		$middleware = self::$middleware ?? [];
 		$response = '';
@@ -130,42 +123,33 @@ abstract class ApiResources extends Controller
 		$params = self::$map_info['params'] ?? null;
 		$request = new Request($params);
 
-		for ($i = 0; $i < count((array) $middleware); $i++)
-		{
+		for ($i = 0; $i < count((array) $middleware); $i++) {
 			include_once dirname(__DIR__) . '/../../configs/middlewares.php';
 
-			if (array_key_exists($middleware[$i], $middlewares))
-			{
+			if (array_key_exists($middleware[$i], $middlewares)) {
 				$middleware = $middlewares[$middleware[$i]];
-			}
-			else
-			{
+			} else {
 				throw new Exception(
-				 'No Registered Middleware as `' . $middleware[$i] . '`'
+					'No Registered Middleware as `' . $middleware[$i] . '`'
 				);
 			}
 
-			if (!class_exists($middleware))
-			{
+			if (!class_exists($middleware)) {
 				throw new Exception(
-				 "Middleware class does not exist: `{$middleware}`"
+					"Middleware class does not exist: `{$middleware}`"
 				);
 			}
 			$mw = new $middleware();
 
-			if ($mw instanceof MiddlewareInterface)
-			{
-				$next = function (Request $request)
-				{
+			if ($mw instanceof MiddlewareInterface) {
+				$next = function (Request $request) {
 					return self::__routeSelection($request);
 				};
 
 				$response = $mw->handle($request, $next);
-			}
-			else
-			{
+			} else {
 				throw new Exception(
-				 'Middleware class must implements `MiddlewareInterface`'
+					'Middleware class must implements `MiddlewareInterface`'
 				);
 			}
 		}
@@ -175,7 +159,7 @@ abstract class ApiResources extends Controller
 		exit();
 	}
 
-	protected function __map (Request $request = null): void
+	protected function __map(Request $request = null): void
 	{
 		print_r(self::__routeSelection($request));
 		exit();
