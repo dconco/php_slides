@@ -40,4 +40,5 @@
 - Work on `route()` so when using `define()` with `route()` they can pass second parameter in `route()` as controller method for the defined route
 - Added more methods to `Request` class
 - Added documentation to each methods in Request class and interface with Api class and interface
-- Added more version methods manually.
+- Added more version methods API class manually.
+- Added more version methods to API interface manually.
