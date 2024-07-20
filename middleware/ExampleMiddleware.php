@@ -10,7 +10,7 @@ use PhpSlides\Interface\MiddlewareInterface;
 
 final class ExampleMiddleware implements MiddlewareInterface
 {
-	public function handle (Request $request, Closure $next)
+	public function handle(Request $request, Closure $next)
 	{
 		return $next($request);
 	}

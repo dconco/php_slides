@@ -1,7 +1,7 @@
 Usage: php create [options] [..args]
 
-  -h || --help            Show list of available commands
-  -s || --strict          Provide a strict class
+  [-h | --help]           Show list of available commands
+  [-s | --strict]         Provide a strict class
 
   controller <name>       Create a route controller class
   api-controller <name>   Create an API controller class

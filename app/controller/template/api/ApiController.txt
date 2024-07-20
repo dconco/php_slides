@@ -25,4 +25,12 @@ final class ControllerName implements ApiController
 	public function destroy(Request $request)
 	{
 	}
+
+	public function error(Request $request)
+	{
+	}
+
+	public function __default(Request $request)
+	{
+	}
 }
